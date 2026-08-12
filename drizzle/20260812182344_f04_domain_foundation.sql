@@ -11,6 +11,7 @@ CREATE TYPE "public"."payroll_status" AS ENUM('OPEN', 'CALCULATED', 'FINALIZED',
 CREATE TYPE "public"."permission_risk" AS ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');--> statement-breakpoint
 CREATE TYPE "public"."primary_work_state" AS ENUM('SHIFT', 'OFF');--> statement-breakpoint
 CREATE TYPE "public"."request_status" AS ENUM('DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED', 'SUPERSEDED');--> statement-breakpoint
+CREATE TYPE "public"."request_type" AS ENUM('LEAVE', 'SICK', 'PERMISSION', 'TRAINING', 'BUSINESS_DUTY', 'SCHEDULE_CHANGE', 'SHIFT_SWAP', 'REPLACEMENT', 'OVERTIME');--> statement-breakpoint
 CREATE TYPE "public"."schedule_period_status" AS ENUM('OPEN', 'CLOSED', 'ARCHIVED');--> statement-breakpoint
 CREATE TYPE "public"."schedule_version_state" AS ENUM('DRAFT', 'PUBLISHED', 'SUPERSEDED', 'ARCHIVED');--> statement-breakpoint
 CREATE TYPE "public"."scope_type" AS ENUM('SELF', 'TEAM', 'ALL');--> statement-breakpoint
@@ -118,6 +119,7 @@ CREATE TABLE "exception_assignment_links" (
 --> statement-breakpoint
 CREATE TABLE "overtime_records" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"request_id" uuid,
 	"employee_id" uuid NOT NULL,
 	"work_date" date NOT NULL,
 	"start_at" timestamp with time zone NOT NULL,
@@ -139,6 +141,7 @@ CREATE TABLE "overtime_records" (
 --> statement-breakpoint
 CREATE TABLE "replacement_assignments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"request_id" uuid,
 	"original_assignment_id" uuid NOT NULL,
 	"original_employee_id" uuid NOT NULL,
 	"replacement_employee_id" uuid NOT NULL,
@@ -158,6 +161,7 @@ CREATE TABLE "replacement_assignments" (
 --> statement-breakpoint
 CREATE TABLE "shift_swap_requests" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"request_id" uuid,
 	"requester_employee_id" uuid NOT NULL,
 	"counterparty_employee_id" uuid NOT NULL,
 	"requester_assignment_id" uuid NOT NULL,
@@ -177,6 +181,7 @@ CREATE TABLE "shift_swap_requests" (
 --> statement-breakpoint
 CREATE TABLE "workforce_exceptions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"request_id" uuid,
 	"employee_id" uuid NOT NULL,
 	"exception_type" "exception_type" NOT NULL,
 	"start_date" date NOT NULL,
@@ -320,7 +325,7 @@ CREATE TABLE "payroll_periods" (
 	"timezone" text DEFAULT 'Asia/Jakarta' NOT NULL,
 	"status" "payroll_status" DEFAULT 'OPEN' NOT NULL,
 	"calculation_revision" integer DEFAULT 0 NOT NULL,
-	"is_dirty" integer DEFAULT 0 NOT NULL,
+	"is_dirty" boolean DEFAULT false NOT NULL,
 	"calculated_by" uuid,
 	"calculated_at" timestamp with time zone,
 	"finalized_by" uuid,
@@ -332,7 +337,6 @@ CREATE TABLE "payroll_periods" (
 	"row_version" integer DEFAULT 1 NOT NULL,
 	CONSTRAINT "payroll_periods_date_range_valid" CHECK ("payroll_periods"."end_date" >= "payroll_periods"."start_date"),
 	CONSTRAINT "payroll_periods_calculation_revision_nonnegative" CHECK ("payroll_periods"."calculation_revision" >= 0),
-	CONSTRAINT "payroll_periods_is_dirty_boolean" CHECK ("payroll_periods"."is_dirty" in (0, 1)),
 	CONSTRAINT "payroll_periods_row_version_positive" CHECK ("payroll_periods"."row_version" > 0)
 );
 --> statement-breakpoint
@@ -342,12 +346,11 @@ CREATE TABLE "payroll_records" (
 	"employee_id" uuid NOT NULL,
 	"status" "payroll_status" DEFAULT 'OPEN' NOT NULL,
 	"current_revision_id" uuid,
-	"is_dirty" integer DEFAULT 0 NOT NULL,
+	"is_dirty" boolean DEFAULT false NOT NULL,
 	"calculated_take_home_pay" bigint DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"row_version" integer DEFAULT 1 NOT NULL,
-	CONSTRAINT "payroll_records_is_dirty_boolean" CHECK ("payroll_records"."is_dirty" in (0, 1)),
 	CONSTRAINT "payroll_records_thp_nonnegative" CHECK ("payroll_records"."calculated_take_home_pay" >= 0),
 	CONSTRAINT "payroll_records_row_version_positive" CHECK ("payroll_records"."row_version" > 0)
 );
@@ -374,6 +377,32 @@ CREATE TABLE "payroll_revisions" (
 	CONSTRAINT "payroll_revisions_positive_adjustment_nonnegative" CHECK ("payroll_revisions"."total_positive_adjustment" >= 0),
 	CONSTRAINT "payroll_revisions_deduction_nonnegative" CHECK ("payroll_revisions"."total_deduction" >= 0),
 	CONSTRAINT "payroll_revisions_thp_nonnegative" CHECK ("payroll_revisions"."calculated_take_home_pay" >= 0)
+);
+--> statement-breakpoint
+CREATE TABLE "schedule_requests" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type" "request_type" NOT NULL,
+	"status" "request_status" DEFAULT 'DRAFT' NOT NULL,
+	"employee_id" uuid NOT NULL,
+	"requester_user_id" uuid NOT NULL,
+	"start_date" date,
+	"end_date" date,
+	"work_date" date,
+	"reason" text NOT NULL,
+	"proposed_payload" jsonb,
+	"needs_replacement" boolean DEFAULT false NOT NULL,
+	"payroll_impact_expected" boolean DEFAULT false NOT NULL,
+	"submitted_at" timestamp with time zone,
+	"decided_by" uuid,
+	"decided_at" timestamp with time zone,
+	"decision_reason" text,
+	"cancelled_by" uuid,
+	"cancelled_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"row_version" integer DEFAULT 1 NOT NULL,
+	CONSTRAINT "schedule_requests_date_range_valid" CHECK ("schedule_requests"."end_date" is null or "schedule_requests"."start_date" is null or "schedule_requests"."end_date" >= "schedule_requests"."start_date"),
+	CONSTRAINT "schedule_requests_row_version_positive" CHECK ("schedule_requests"."row_version" > 0)
 );
 --> statement-breakpoint
 CREATE TABLE "schedule_periods" (
@@ -504,20 +533,24 @@ ALTER TABLE "shift_incentive_versions" ADD CONSTRAINT "shift_incentive_versions_
 ALTER TABLE "shift_incentive_versions" ADD CONSTRAINT "shift_incentive_versions_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "exception_assignment_links" ADD CONSTRAINT "exception_assignment_links_exception_id_workforce_exceptions_id_fk" FOREIGN KEY ("exception_id") REFERENCES "public"."workforce_exceptions"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "exception_assignment_links" ADD CONSTRAINT "exception_assignment_links_shift_assignment_id_shift_assignments_id_fk" FOREIGN KEY ("shift_assignment_id") REFERENCES "public"."shift_assignments"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "overtime_records" ADD CONSTRAINT "overtime_records_request_id_schedule_requests_id_fk" FOREIGN KEY ("request_id") REFERENCES "public"."schedule_requests"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "overtime_records" ADD CONSTRAINT "overtime_records_employee_id_employees_id_fk" FOREIGN KEY ("employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "overtime_records" ADD CONSTRAINT "overtime_records_related_assignment_id_shift_assignments_id_fk" FOREIGN KEY ("related_assignment_id") REFERENCES "public"."shift_assignments"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "overtime_records" ADD CONSTRAINT "overtime_records_requested_by_users_id_fk" FOREIGN KEY ("requested_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "overtime_records" ADD CONSTRAINT "overtime_records_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "replacement_assignments" ADD CONSTRAINT "replacement_assignments_request_id_schedule_requests_id_fk" FOREIGN KEY ("request_id") REFERENCES "public"."schedule_requests"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replacement_assignments" ADD CONSTRAINT "replacement_assignments_original_assignment_id_shift_assignments_id_fk" FOREIGN KEY ("original_assignment_id") REFERENCES "public"."shift_assignments"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replacement_assignments" ADD CONSTRAINT "replacement_assignments_original_employee_id_employees_id_fk" FOREIGN KEY ("original_employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replacement_assignments" ADD CONSTRAINT "replacement_assignments_replacement_employee_id_employees_id_fk" FOREIGN KEY ("replacement_employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replacement_assignments" ADD CONSTRAINT "replacement_assignments_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_request_id_schedule_requests_id_fk" FOREIGN KEY ("request_id") REFERENCES "public"."schedule_requests"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_requester_employee_id_employees_id_fk" FOREIGN KEY ("requester_employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_counterparty_employee_id_employees_id_fk" FOREIGN KEY ("counterparty_employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_requester_assignment_id_shift_assignments_id_fk" FOREIGN KEY ("requester_assignment_id") REFERENCES "public"."shift_assignments"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_counterparty_assignment_id_shift_assignments_id_fk" FOREIGN KEY ("counterparty_assignment_id") REFERENCES "public"."shift_assignments"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_requested_by_users_id_fk" FOREIGN KEY ("requested_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shift_swap_requests" ADD CONSTRAINT "shift_swap_requests_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "workforce_exceptions" ADD CONSTRAINT "workforce_exceptions_request_id_schedule_requests_id_fk" FOREIGN KEY ("request_id") REFERENCES "public"."schedule_requests"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "workforce_exceptions" ADD CONSTRAINT "workforce_exceptions_employee_id_employees_id_fk" FOREIGN KEY ("employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "workforce_exceptions" ADD CONSTRAINT "workforce_exceptions_requested_by_users_id_fk" FOREIGN KEY ("requested_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "workforce_exceptions" ADD CONSTRAINT "workforce_exceptions_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -539,6 +572,10 @@ ALTER TABLE "payroll_revisions" ADD CONSTRAINT "payroll_revisions_payroll_record
 ALTER TABLE "payroll_revisions" ADD CONSTRAINT "payroll_revisions_calculated_by_users_id_fk" FOREIGN KEY ("calculated_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payroll_revisions" ADD CONSTRAINT "payroll_revisions_finalized_by_users_id_fk" FOREIGN KEY ("finalized_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payroll_revisions" ADD CONSTRAINT "payroll_revisions_locked_by_users_id_fk" FOREIGN KEY ("locked_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schedule_requests" ADD CONSTRAINT "schedule_requests_employee_id_employees_id_fk" FOREIGN KEY ("employee_id") REFERENCES "public"."employees"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schedule_requests" ADD CONSTRAINT "schedule_requests_requester_user_id_users_id_fk" FOREIGN KEY ("requester_user_id") REFERENCES "public"."users"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schedule_requests" ADD CONSTRAINT "schedule_requests_decided_by_users_id_fk" FOREIGN KEY ("decided_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schedule_requests" ADD CONSTRAINT "schedule_requests_cancelled_by_users_id_fk" FOREIGN KEY ("cancelled_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "schedule_versions" ADD CONSTRAINT "schedule_versions_schedule_period_id_schedule_periods_id_fk" FOREIGN KEY ("schedule_period_id") REFERENCES "public"."schedule_periods"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "schedule_versions" ADD CONSTRAINT "schedule_versions_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "schedule_versions" ADD CONSTRAINT "schedule_versions_published_by_users_id_fk" FOREIGN KEY ("published_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -562,10 +599,13 @@ CREATE INDEX "user_roles_user_effective_idx" ON "user_roles" USING btree ("user_
 CREATE INDEX "user_roles_role_idx" ON "user_roles" USING btree ("role_id");--> statement-breakpoint
 CREATE INDEX "employee_salary_versions_effective_idx" ON "employee_salary_versions" USING btree ("employee_id","effective_from","effective_to");--> statement-breakpoint
 CREATE INDEX "shift_incentive_versions_effective_idx" ON "shift_incentive_versions" USING btree ("shift_type_id","effective_from","effective_to");--> statement-breakpoint
+CREATE UNIQUE INDEX "overtime_records_request_uq" ON "overtime_records" USING btree ("request_id");--> statement-breakpoint
 CREATE INDEX "overtime_records_employee_work_date_idx" ON "overtime_records" USING btree ("employee_id","work_date");--> statement-breakpoint
-CREATE UNIQUE INDEX "replacement_assignments_original_active_uq" ON "replacement_assignments" USING btree ("original_assignment_id","id");--> statement-breakpoint
+CREATE UNIQUE INDEX "replacement_assignments_request_uq" ON "replacement_assignments" USING btree ("request_id");--> statement-breakpoint
 CREATE INDEX "replacement_assignments_replacement_employee_idx" ON "replacement_assignments" USING btree ("replacement_employee_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "shift_swap_requests_request_uq" ON "shift_swap_requests" USING btree ("request_id");--> statement-breakpoint
 CREATE INDEX "shift_swap_requests_requester_status_idx" ON "shift_swap_requests" USING btree ("requester_employee_id","status");--> statement-breakpoint
+CREATE UNIQUE INDEX "workforce_exceptions_request_uq" ON "workforce_exceptions" USING btree ("request_id");--> statement-breakpoint
 CREATE INDEX "workforce_exceptions_employee_dates_idx" ON "workforce_exceptions" USING btree ("employee_id","start_date","end_date");--> statement-breakpoint
 CREATE INDEX "workforce_exceptions_status_idx" ON "workforce_exceptions" USING btree ("status");--> statement-breakpoint
 CREATE UNIQUE INDEX "employees_user_id_uq" ON "employees" USING btree ("user_id");--> statement-breakpoint
@@ -582,6 +622,9 @@ CREATE UNIQUE INDEX "payroll_periods_period_code_uq" ON "payroll_periods" USING 
 CREATE UNIQUE INDEX "payroll_records_period_employee_uq" ON "payroll_records" USING btree ("payroll_period_id","employee_id");--> statement-breakpoint
 CREATE INDEX "payroll_records_employee_idx" ON "payroll_records" USING btree ("employee_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "payroll_revisions_record_revision_uq" ON "payroll_revisions" USING btree ("payroll_record_id","revision_number");--> statement-breakpoint
+CREATE INDEX "schedule_requests_employee_status_idx" ON "schedule_requests" USING btree ("employee_id","status");--> statement-breakpoint
+CREATE INDEX "schedule_requests_type_status_idx" ON "schedule_requests" USING btree ("type","status");--> statement-breakpoint
+CREATE INDEX "schedule_requests_work_date_idx" ON "schedule_requests" USING btree ("work_date");--> statement-breakpoint
 CREATE UNIQUE INDEX "schedule_periods_period_code_uq" ON "schedule_periods" USING btree ("period_code");--> statement-breakpoint
 CREATE INDEX "schedule_periods_date_range_idx" ON "schedule_periods" USING btree ("start_date","end_date");--> statement-breakpoint
 CREATE UNIQUE INDEX "schedule_versions_period_revision_uq" ON "schedule_versions" USING btree ("schedule_period_id","revision_number");--> statement-breakpoint

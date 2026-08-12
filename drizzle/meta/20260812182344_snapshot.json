@@ -1,5 +1,5 @@
 {
-  "id": "d4305a6e-3296-4cb3-869f-e8d7a239b7e4",
+  "id": "130d0f7b-d61f-479d-b62a-9732ade6f911",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -924,6 +924,12 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
+        "request_id": {
+          "name": "request_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "employee_id": {
           "name": "employee_id",
           "type": "uuid",
@@ -1015,6 +1021,21 @@
         }
       },
       "indexes": {
+        "overtime_records_request_uq": {
+          "name": "overtime_records_request_uq",
+          "columns": [
+            {
+              "expression": "request_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "overtime_records_employee_work_date_idx": {
           "name": "overtime_records_employee_work_date_idx",
           "columns": [
@@ -1038,6 +1059,15 @@
         }
       },
       "foreignKeys": {
+        "overtime_records_request_id_schedule_requests_id_fk": {
+          "name": "overtime_records_request_id_schedule_requests_id_fk",
+          "tableFrom": "overtime_records",
+          "tableTo": "schedule_requests",
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
         "overtime_records_employee_id_employees_id_fk": {
           "name": "overtime_records_employee_id_employees_id_fk",
           "tableFrom": "overtime_records",
@@ -1104,6 +1134,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "request_id": {
+          "name": "request_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "original_assignment_id": {
           "name": "original_assignment_id",
@@ -1184,17 +1220,11 @@
         }
       },
       "indexes": {
-        "replacement_assignments_original_active_uq": {
-          "name": "replacement_assignments_original_active_uq",
+        "replacement_assignments_request_uq": {
+          "name": "replacement_assignments_request_uq",
           "columns": [
             {
-              "expression": "original_assignment_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "id",
+              "expression": "request_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1222,6 +1252,15 @@
         }
       },
       "foreignKeys": {
+        "replacement_assignments_request_id_schedule_requests_id_fk": {
+          "name": "replacement_assignments_request_id_schedule_requests_id_fk",
+          "tableFrom": "replacement_assignments",
+          "tableTo": "schedule_requests",
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
         "replacement_assignments_original_assignment_id_shift_assignments_id_fk": {
           "name": "replacement_assignments_original_assignment_id_shift_assignments_id_fk",
           "tableFrom": "replacement_assignments",
@@ -1288,6 +1327,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "request_id": {
+          "name": "request_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "requester_employee_id": {
           "name": "requester_employee_id",
@@ -1368,6 +1413,21 @@
         }
       },
       "indexes": {
+        "shift_swap_requests_request_uq": {
+          "name": "shift_swap_requests_request_uq",
+          "columns": [
+            {
+              "expression": "request_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "shift_swap_requests_requester_status_idx": {
           "name": "shift_swap_requests_requester_status_idx",
           "columns": [
@@ -1391,6 +1451,15 @@
         }
       },
       "foreignKeys": {
+        "shift_swap_requests_request_id_schedule_requests_id_fk": {
+          "name": "shift_swap_requests_request_id_schedule_requests_id_fk",
+          "tableFrom": "shift_swap_requests",
+          "tableTo": "schedule_requests",
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
         "shift_swap_requests_requester_employee_id_employees_id_fk": {
           "name": "shift_swap_requests_requester_employee_id_employees_id_fk",
           "tableFrom": "shift_swap_requests",
@@ -1475,6 +1544,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "request_id": {
+          "name": "request_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "employee_id": {
           "name": "employee_id",
@@ -1562,6 +1637,21 @@
         }
       },
       "indexes": {
+        "workforce_exceptions_request_uq": {
+          "name": "workforce_exceptions_request_uq",
+          "columns": [
+            {
+              "expression": "request_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "workforce_exceptions_employee_dates_idx": {
           "name": "workforce_exceptions_employee_dates_idx",
           "columns": [
@@ -1606,6 +1696,15 @@
         }
       },
       "foreignKeys": {
+        "workforce_exceptions_request_id_schedule_requests_id_fk": {
+          "name": "workforce_exceptions_request_id_schedule_requests_id_fk",
+          "tableFrom": "workforce_exceptions",
+          "tableTo": "schedule_requests",
+          "columnsFrom": ["request_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
         "workforce_exceptions_employee_id_employees_id_fk": {
           "name": "workforce_exceptions_employee_id_employees_id_fk",
           "tableFrom": "workforce_exceptions",
@@ -2651,10 +2750,10 @@
         },
         "is_dirty": {
           "name": "is_dirty",
-          "type": "integer",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": 0
+          "default": false
         },
         "calculated_by": {
           "name": "calculated_by",
@@ -2772,10 +2871,6 @@
           "name": "payroll_periods_calculation_revision_nonnegative",
           "value": "\"payroll_periods\".\"calculation_revision\" >= 0"
         },
-        "payroll_periods_is_dirty_boolean": {
-          "name": "payroll_periods_is_dirty_boolean",
-          "value": "\"payroll_periods\".\"is_dirty\" in (0, 1)"
-        },
         "payroll_periods_row_version_positive": {
           "name": "payroll_periods_row_version_positive",
           "value": "\"payroll_periods\".\"row_version\" > 0"
@@ -2822,10 +2917,10 @@
         },
         "is_dirty": {
           "name": "is_dirty",
-          "type": "integer",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": 0
+          "default": false
         },
         "calculated_take_home_pay": {
           "name": "calculated_take_home_pay",
@@ -2918,10 +3013,6 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {
-        "payroll_records_is_dirty_boolean": {
-          "name": "payroll_records_is_dirty_boolean",
-          "value": "\"payroll_records\".\"is_dirty\" in (0, 1)"
-        },
         "payroll_records_thp_nonnegative": {
           "name": "payroll_records_thp_nonnegative",
           "value": "\"payroll_records\".\"calculated_take_home_pay\" >= 0"
@@ -3120,6 +3211,258 @@
         "payroll_revisions_thp_nonnegative": {
           "name": "payroll_revisions_thp_nonnegative",
           "value": "\"payroll_revisions\".\"calculated_take_home_pay\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.schedule_requests": {
+      "name": "schedule_requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "request_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "request_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'DRAFT'"
+        },
+        "employee_id": {
+          "name": "employee_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requester_user_id": {
+          "name": "requester_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_date": {
+          "name": "work_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "proposed_payload": {
+          "name": "proposed_payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "needs_replacement": {
+          "name": "needs_replacement",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "payroll_impact_expected": {
+          "name": "payroll_impact_expected",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "submitted_at": {
+          "name": "submitted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decided_by": {
+          "name": "decided_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decided_at": {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decision_reason": {
+          "name": "decision_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "row_version": {
+          "name": "row_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {
+        "schedule_requests_employee_status_idx": {
+          "name": "schedule_requests_employee_status_idx",
+          "columns": [
+            {
+              "expression": "employee_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "schedule_requests_type_status_idx": {
+          "name": "schedule_requests_type_status_idx",
+          "columns": [
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "schedule_requests_work_date_idx": {
+          "name": "schedule_requests_work_date_idx",
+          "columns": [
+            {
+              "expression": "work_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "schedule_requests_employee_id_employees_id_fk": {
+          "name": "schedule_requests_employee_id_employees_id_fk",
+          "tableFrom": "schedule_requests",
+          "tableTo": "employees",
+          "columnsFrom": ["employee_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "schedule_requests_requester_user_id_users_id_fk": {
+          "name": "schedule_requests_requester_user_id_users_id_fk",
+          "tableFrom": "schedule_requests",
+          "tableTo": "users",
+          "columnsFrom": ["requester_user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "schedule_requests_decided_by_users_id_fk": {
+          "name": "schedule_requests_decided_by_users_id_fk",
+          "tableFrom": "schedule_requests",
+          "tableTo": "users",
+          "columnsFrom": ["decided_by"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "schedule_requests_cancelled_by_users_id_fk": {
+          "name": "schedule_requests_cancelled_by_users_id_fk",
+          "tableFrom": "schedule_requests",
+          "tableTo": "users",
+          "columnsFrom": ["cancelled_by"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "schedule_requests_date_range_valid": {
+          "name": "schedule_requests_date_range_valid",
+          "value": "\"schedule_requests\".\"end_date\" is null or \"schedule_requests\".\"start_date\" is null or \"schedule_requests\".\"end_date\" >= \"schedule_requests\".\"start_date\""
+        },
+        "schedule_requests_row_version_positive": {
+          "name": "schedule_requests_row_version_positive",
+          "value": "\"schedule_requests\".\"row_version\" > 0"
         }
       },
       "isRLSEnabled": false
@@ -4153,6 +4496,21 @@
       "name": "request_status",
       "schema": "public",
       "values": ["DRAFT", "PENDING", "APPROVED", "REJECTED", "CANCELLED", "SUPERSEDED"]
+    },
+    "public.request_type": {
+      "name": "request_type",
+      "schema": "public",
+      "values": [
+        "LEAVE",
+        "SICK",
+        "PERMISSION",
+        "TRAINING",
+        "BUSINESS_DUTY",
+        "SCHEDULE_CHANGE",
+        "SHIFT_SWAP",
+        "REPLACEMENT",
+        "OVERTIME"
+      ]
     },
     "public.schedule_period_status": {
       "name": "schedule_period_status",
