@@ -289,12 +289,6 @@ function TeamByEmployee({ employeeId }: { employeeId: string }) {
   const row = teamSchedule.find((item) => item.employeeId === employeeId) ?? teamSchedule[0]!;
   return (
     <div className="product-team-mobile-list">
-      <label className="product-inline-select">
-        Employee
-        <select value={row.employeeId} onChange={() => undefined}>
-          <option value={row.employeeId}>{row.employeeName}</option>
-        </select>
-      </label>
       <ScheduleAgenda items={row.cells} />
     </div>
   );
