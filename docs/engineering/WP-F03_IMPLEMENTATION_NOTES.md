@@ -1,6 +1,6 @@
 # WP-F03 — High-Fidelity Frontend Product Surfaces — Implementation Notes
 
-> Status: **COMPLETE — awaiting user acceptance**  
+> Status: **ACCEPTED**  
 > Workplan: `WP-F03`  
 > PRD anchors: PRD-01, PRD-02, PRD-06, PRD-10, PRD-11, PRD-12, PRD-13, PRD-17, PRD-18, PRD-19  
 > Primary review route: `/dashboard`  
@@ -221,4 +221,4 @@ Buttons and state changes inside fixture surfaces exist to validate interaction 
 
 ## Handoff
 
-WP-F03 implementation is complete and intentionally stops before WP-F04 so the product surfaces can be reviewed visually on desktop/mobile and Light/Dark Mode. WP-F04 must not begin until explicit user acceptance.
+WP-F03 was explicitly accepted by the user for progression. Its high-fidelity desktop/mobile and Light/Dark UX contracts are carried forward unchanged; WP-F04 now provides the persistence/domain foundation while F03 fixture surfaces remain in place until their later full-stack integration phases.
