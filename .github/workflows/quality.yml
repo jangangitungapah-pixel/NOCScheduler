@@ -3,19 +3,20 @@ name: Quality
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  format-f02:
-    name: F02 canonical formatter
+  quality:
+    name: F02 quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -32,18 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply canonical formatting
-        run: pnpm format
+      - name: Static and application quality gates
+        run: pnpm quality
 
-      - name: Commit formatted files when needed
-        shell: bash
-        run: |
-          if git diff --quiet; then
-            echo "No formatting changes required."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "style: format F02 application shell"
-          git push
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright F02 acceptance
+        run: pnpm e2e
