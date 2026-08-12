@@ -25,9 +25,10 @@ export default defineConfig({
   webServer: externalBaseURL
     ? undefined
     : {
-        command: "node scripts/run-next.mjs dev .next-e2e -H 127.0.0.1 -p 3100",
+        command:
+          "node scripts/run-next.mjs build .next-e2e && node scripts/run-next.mjs start .next-e2e -H 127.0.0.1 -p 3100",
         url: baseURL,
         reuseExistingServer: false,
-        timeout: 120_000,
+        timeout: 180_000,
       },
 });
