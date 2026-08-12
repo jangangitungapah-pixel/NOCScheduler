@@ -5,7 +5,7 @@ import { Badge, Icon, Surface } from "@/components/ui";
 export default function LoginPage() {
   return (
     <main className="app-login-page">
-      <Surface className="app-login-card" elevation="e2">
+      <Surface className="app-login-card" elevation="raised">
         <div className="app-login-card__brand">
           <span className="app-brand-mark" aria-hidden="true">
             N
@@ -25,7 +25,7 @@ export default function LoginPage() {
         </div>
         <Link className="app-login-card__continue" href="/dashboard">
           Masuk ke shell demo
-          <Icon name="chevron-right" size={17} />
+          <Icon name="chevron-right" size={16} />
         </Link>
       </Surface>
     </main>
