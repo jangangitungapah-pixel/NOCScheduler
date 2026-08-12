@@ -1,0 +1,321 @@
+.product-view-panel {
+  min-width: 0;
+}
+
+.product-week-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(8rem, 1fr));
+  overflow: auto;
+}
+
+.product-week-grid article {
+  min-height: 11rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-right: var(--border-width) solid var(--border-subtle);
+}
+
+.product-week-grid article:last-child {
+  border-right: 0;
+}
+
+.product-week-grid__date {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.product-week-grid__date span,
+.product-week-grid small {
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+}
+
+.product-month-calendar {
+  overflow: hidden;
+}
+
+.product-month-calendar__weekdays,
+.product-month-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.product-month-calendar__weekdays {
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+}
+
+.product-month-calendar__weekdays span {
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.product-month-calendar__grid > div {
+  min-height: 7.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-top: var(--border-width) solid var(--border-subtle);
+  border-right: var(--border-width) solid var(--border-subtle);
+}
+
+.product-month-calendar__grid > div:nth-child(7n) {
+  border-right: 0;
+}
+
+.product-month-calendar__grid > div.is-today {
+  background: var(--surface-selected);
+  box-shadow: inset 0 0 0 2px var(--border-focus);
+}
+
+.product-month-calendar__grid > div > strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.product-month-calendar__grid > div > small {
+  color: var(--text-tertiary);
+  font-size: var(--text-micro);
+}
+
+.product-team-mobile,
+.product-manage-mobile {
+  display: none;
+}
+
+.product-team-mobile-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.product-team-shift-group {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+}
+
+.product-team-shift-group:last-child {
+  border-bottom: 0;
+}
+
+.product-team-shift-group__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.product-team-shift-group__heading > span {
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+}
+
+.product-inline-select {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+}
+
+.product-inline-select select {
+  min-height: var(--control-h-md);
+  padding: 0 var(--space-3);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+  color: var(--text-primary);
+}
+
+.product-mobile-select-list {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+
+.product-mobile-select-list label {
+  min-height: 3.5rem;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.product-mobile-select-list label:has(input:checked) {
+  border-color: var(--border-focus);
+  background: var(--surface-selected);
+}
+
+.product-mobile-select-list input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.product-mobile-select-list label > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-0-5);
+}
+
+.product-mobile-select-list small {
+  color: var(--text-secondary);
+}
+
+.product-shift-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.product-shift-picker button {
+  min-height: 3.25rem;
+  display: grid;
+  place-items: center;
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+  cursor: pointer;
+}
+
+.product-shift-picker button[aria-pressed="true"] {
+  border-color: var(--border-focus);
+  background: var(--surface-selected);
+  box-shadow: inset 0 0 0 1px var(--border-focus);
+}
+
+.product-mobile-review .product-note {
+  margin-top: var(--space-3);
+}
+
+.product-request-create {
+  max-width: 56rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.product-form-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.product-form-grid textarea {
+  min-height: 7rem;
+  padding: var(--space-3);
+  resize: vertical;
+}
+
+.product-request-impact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.product-request-impact > div {
+  min-height: 7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.product-date-strip button {
+  min-width: 4.75rem;
+  min-height: 4.5rem;
+  display: grid;
+  flex: 0 0 4.75rem;
+  place-items: center;
+  gap: var(--space-0-5);
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.product-date-strip button.is-active {
+  border-color: var(--border-focus);
+  background: var(--surface-selected);
+  color: var(--text-primary);
+}
+
+.product-date-strip button strong {
+  font-size: var(--text-subsection);
+}
+
+.product-activity-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-activity-link:hover .product-activity-row {
+  background: var(--surface-hover);
+}
+
+@media (max-width: 767px) {
+  .product-week-grid,
+  .product-month-calendar {
+    display: none;
+  }
+
+  .product-view-panel[data-mode="week"]::after,
+  .product-view-panel[data-mode="month"]::after {
+    content: "Mobile uses the agenda-first schedule composition. Switch back to Agenda for detailed assignments.";
+    display: block;
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--surface-base);
+    color: var(--text-secondary);
+  }
+
+  .product-team-desktop-matrix,
+  .product-desktop-team-toolbar,
+  .product-manage-desktop {
+    display: none;
+  }
+
+  .product-team-mobile,
+  .product-manage-mobile {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .product-team-mobile .product-date-strip {
+    margin-inline: calc(var(--space-4) * -1);
+  }
+
+  .product-request-impact {
+    grid-template-columns: 1fr;
+  }
+
+  .product-request-impact > .ui-icon {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .product-request-create {
+    max-width: none;
+  }
+
+  .product-form-grid__wide {
+    grid-column: auto;
+  }
+}
