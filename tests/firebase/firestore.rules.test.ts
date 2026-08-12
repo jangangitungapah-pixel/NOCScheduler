@@ -1,6 +1,10 @@
 import { readFile } from "node:fs/promises";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { assertFails, initializeTestEnvironment, type RulesTestEnvironment } from "@firebase/rules-unit-testing";
+import { afterAll, beforeAll, describe, it } from "vitest";
+import {
+  assertFails,
+  initializeTestEnvironment,
+  type RulesTestEnvironment,
+} from "@firebase/rules-unit-testing";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 let testEnv: RulesTestEnvironment;
