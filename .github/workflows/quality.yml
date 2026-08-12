@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F03 team polish repair
+    name: F03 quality gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,19 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Remove redundant employee selector
-        run: |
-          python -c 'from pathlib import Path; p=Path("src/modules/product-surfaces/schedule-experiences.tsx"); s=p.read_text(); old="      <label className=\"product-inline-select\">\n        Employee\n        <select value={row.employeeId} onChange={() => undefined}>\n          <option value={row.employeeId}>{row.employeeName}</option>\n        </select>\n      </label>\n"; assert old in s; p.write_text(s.replace(old, "", 1))'
-          pnpm exec prettier --write src/modules/product-surfaces/schedule-experiences.tsx
+      - name: Static and application quality gates
+        run: pnpm quality
 
-      - name: Commit team polish
-        run: |
-          if git diff --quiet; then
-            echo "No polish changes needed."
-            exit 1
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/modules/product-surfaces/schedule-experiences.tsx
-          git commit -m "fix: remove redundant F03 team employee selector"
-          git push
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright F03 acceptance
+        run: pnpm e2e
