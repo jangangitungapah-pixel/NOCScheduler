@@ -1,29 +1,25 @@
 import { expect, test } from "@playwright/test";
 
-test(
-  "design-system reference supports theme persistence and keyboard controls",
-  async ({ page }) => {
-    await page.goto("/design-system");
+test("design-system reference supports theme persistence and keyboard controls", async ({
+  page,
+}) => {
+  await page.goto("/design-system");
 
-    await expect(page.getByRole("heading", { name: "NOCScheduler Design System" })).toBeVisible();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("heading", { name: "NOCScheduler Design System" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
-    await page.getByRole("button", { name: /aktifkan mode gelap/i }).click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("button", { name: /aktifkan mode gelap/i }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
-    await page.reload();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
-    const month = page.getByRole("radio", { name: "Month" });
-    await month.focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("radio", { name: "Week" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
-    await expect(page.getByRole("radio", { name: "Week" })).toBeFocused();
-  },
-);
+  const month = page.getByRole("radio", { name: "Month" });
+  await month.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("radio", { name: "Week" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("radio", { name: "Week" })).toBeFocused();
+});
 
 test("design-system reference contains page overflow on compact mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
