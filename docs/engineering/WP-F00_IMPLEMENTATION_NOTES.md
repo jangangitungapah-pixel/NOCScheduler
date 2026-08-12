@@ -18,6 +18,16 @@
 - Liveness route at `/api/health/live`; DB-aware readiness remains a later production/data phase.
 - GitHub Actions quality workflow.
 - Repository contribution conventions.
+- pnpm dependency-build security policy with version-scoped approvals in `pnpm-workspace.yaml`.
+
+## Dependency build policy
+
+pnpm 11 rejects unreviewed dependency lifecycle scripts. WP-F00 explicitly permits only the currently resolved versions needed by the baseline:
+
+- `sharp@0.34.5`
+- `unrs-resolver@1.12.2`
+
+The allow-list is intentionally version-scoped. A future dependency version change must be reviewed rather than inheriting script execution permission silently.
 
 ## Intentional boundaries
 
@@ -34,7 +44,7 @@ Those remain assigned to later workplan phases.
 
 ## Exit-gate verification
 
-The first CI bootstrap intentionally generates `pnpm-lock.yaml` using the pinned pnpm version and uploads it as an artifact. After that lockfile is committed, CI switches to frozen installs and the final WP-F00 gate is re-run.
+The CI bootstrap generates `pnpm-lock.yaml` using the pinned pnpm version only after dependency install and all quality gates are valid. The first successful bootstrap run commits that reviewed lockfile. The following run must prove a frozen install.
 
 Final acceptance requires:
 
