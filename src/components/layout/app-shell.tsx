@@ -113,7 +113,7 @@ function CommandPalette({
           />
           <kbd>Esc</kbd>
         </div>
-        <div className="app-command__results" role="list">
+        <div className="app-command__results">
           {filteredItems.length ? (
             filteredItems.map((item) => (
               <Link
@@ -121,7 +121,6 @@ function CommandPalette({
                 href={item.href}
                 key={item.href}
                 onClick={() => onOpenChange(false)}
-                role="listitem"
               >
                 <span className="app-command__icon">
                   <Icon name={item.icon} size={18} />
