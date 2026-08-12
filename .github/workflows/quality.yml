@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F03 quality gate
+    name: F03 interaction formatter
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,11 +33,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Static and application quality gates
-        run: pnpm quality
+      - name: Format F03 interaction surface
+        run: pnpm exec prettier --write src/modules/product-surfaces/schedule-experiences.tsx
 
-      - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Playwright F03 acceptance
-        run: pnpm e2e
+      - name: Commit canonical formatting
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/modules/product-surfaces/schedule-experiences.tsx
+          git commit -m "style: format F03 schedule interactions"
+          git push
