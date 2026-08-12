@@ -8,9 +8,6 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  esbuild: {
-    jsx: "automatic",
-  },
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
