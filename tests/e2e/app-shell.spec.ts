@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("desktop shell supports collapse, command navigation, and browser history", async ({ page }) => {
+test("desktop shell supports collapse, command navigation, and browser history", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/dashboard");
 
@@ -20,7 +22,9 @@ test("desktop shell supports collapse, command navigation, and browser history",
   await page.keyboard.press("Control+K");
   const command = page.getByRole("dialog", { name: "Cari halaman" });
   await expect(command).toBeVisible();
-  await command.getByRole("searchbox", { name: "Cari halaman atau perintah" }).fill("Payroll Overview");
+  await command
+    .getByRole("searchbox", { name: "Cari halaman atau perintah" })
+    .fill("Payroll Overview");
   await command.getByRole("link", { name: /Payroll Overview/ }).click();
 
   await expect(page).toHaveURL(/\/payroll$/);
@@ -73,7 +77,9 @@ test("saved dark theme is applied before the application shell hydrates", async 
 test("login route stays outside the authenticated application shell", async ({ page }) => {
   await page.goto("/login");
 
-  await expect(page.getByRole("heading", { name: "Authentication masuk pada WP-F05." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Authentication masuk pada WP-F05." }),
+  ).toBeVisible();
   await expect(page.getByLabel("Sidebar aplikasi")).toHaveCount(0);
   await expect(page.getByLabel("Navigasi mobile")).toHaveCount(0);
 });
