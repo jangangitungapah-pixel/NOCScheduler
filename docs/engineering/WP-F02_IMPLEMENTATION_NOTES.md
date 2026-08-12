@@ -1,6 +1,6 @@
 # WP-F02 — Application Shell, Navigation & Responsive Frame — Implementation Notes
 
-> Status: **COMPLETE — awaiting user acceptance**  
+> Status: **ACCEPTED**  
 > Workplan: `WP-F02`  
 > PRD anchors: PRD-06, PRD-07, PRD-10, PRD-11, PRD-12, PRD-13, PRD-19  
 > Primary review route: `/dashboard`  
@@ -149,7 +149,7 @@ F02 continued treating CI and browser acceptance as implementation feedback rath
 
 ## Intentional boundaries
 
-WP-F02 does **not** implement:
+WP-F02 did **not** implement:
 
 - high-fidelity business content for Dashboard/Schedule/Employees/Payroll/Reports,
 - real employee/schedule/payroll data,
@@ -161,7 +161,7 @@ WP-F02 does **not** implement:
 - schedule/payroll business logic,
 - backend APIs.
 
-Those remain assigned to WP-F03 and later phases. **WP-F03 has not started.**
+High-fidelity frontend product surfaces were subsequently implemented in WP-F03. Backend persistence, authentication, authoritative authorization, and domain execution remain assigned to later workplan phases.
 
 ## Exit-gate checklist
 
@@ -189,4 +189,4 @@ Those remain assigned to WP-F03 and later phases. **WP-F03 has not started.**
 
 ## Handoff
 
-WP-F02 is complete and intentionally stops before WP-F03. Review the shell on desktop, tablet, compact mobile, Light Mode, and Dark Mode. WP-F03 must not begin until explicit user approval.
+WP-F02 was explicitly accepted when the user instructed the implementation to continue to the next phase. WP-F03 then began from this accepted shell baseline.

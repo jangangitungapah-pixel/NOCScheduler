@@ -8,24 +8,45 @@ The repository is implemented from the canonical product specifications in `docs
 
 - **WP-F00 — Project Setup & Engineering Baseline: ACCEPTED**
 - **WP-F01 — Frontend Foundation & Design System: ACCEPTED**
-- **WP-F02 — Application Shell, Navigation & Responsive Frame: COMPLETE — awaiting user acceptance**
-- WP-F03 has not started.
+- **WP-F02 — Application Shell, Navigation & Responsive Frame: ACCEPTED**
+- **WP-F03 — High-Fidelity Frontend Product Surfaces: COMPLETE — awaiting user acceptance**
+- WP-F04 has not started.
 
-F02 is intentionally a shell/reference phase. High-fidelity business surfaces and fixture-driven feature content begin in WP-F03.
+WP-F03 replaces shell placeholders with high-fidelity, fixture-driven product surfaces. The fixtures are frontend development contracts only: they are shaped toward the future domain/API model but are **not** persistent data or authoritative schedule/payroll business logic.
 
-## Review routes
+## F03 review routes
 
-With `pnpm dev` running on port 3000, review:
+With `pnpm dev` running on port 3000, review both Desktop and Mobile, Light and Dark Mode:
 
-- application shell: `http://localhost:3000/dashboard`
-- My Schedule shell: `http://localhost:3000/schedule/me`
-- Team Schedule shell: `http://localhost:3000/schedule/team`
-- Payroll shell: `http://localhost:3000/payroll`
-- Settings shell: `http://localhost:3000/settings`
+- Dashboard: `http://localhost:3000/dashboard`
+- My Schedule: `http://localhost:3000/schedule/me`
+- Team Schedule: `http://localhost:3000/schedule/team`
+- Manage Schedule: `http://localhost:3000/schedule/manage`
+- Requests: `http://localhost:3000/schedule/requests`
+- Request create flow: `http://localhost:3000/schedule/requests?create=1`
+- Employees: `http://localhost:3000/employees`
+- Employee history: `http://localhost:3000/employees/emp-001/history`
+- Payroll Overview: `http://localhost:3000/payroll`
+- Monthly Payroll: `http://localhost:3000/payroll/2026-08`
+- Reports: `http://localhost:3000/reports`
+- Activity History: `http://localhost:3000/activity`
+- Settings / Shifts: `http://localhost:3000/settings/shifts`
+- Notifications: `http://localhost:3000/notifications`
+- Profile fixture: `http://localhost:3000/profile`
 - login boundary outside the shell: `http://localhost:3000/login`
 - F01 design-system reference: `http://localhost:3000/design-system`
 
 The root route `/` currently redirects the temporary authenticated fixture to `/dashboard`. Real authentication/session routing is intentionally deferred to WP-F05.
+
+## F03 responsive contracts
+
+- Desktop keeps dense operational workspaces where scanning and comparison matter.
+- My Schedule supports Month, Week, and Agenda interaction; compact mobile stays agenda-first.
+- Team Schedule recomposes on mobile into real `By Day` and `By Employee` modes instead of shrinking the desktop matrix.
+- Manage Schedule recomposes on mobile into focused date → employee → work-state selection and validation/publish review.
+- Shift 3 cross-midnight timing is explicit as `23:00–07:00 (+1 hari)` where relevant.
+- Mobile acceptance guards against accidental page-level horizontal overflow.
+- Light/Dark Mode continue to use the same component tree and semantic design tokens.
 
 ## Stack baseline
 
@@ -75,7 +96,7 @@ pnpm --version
 
 ## Isolated Next.js local outputs
 
-F02 separates development, production build, and Playwright outputs so normal development does not fight with build/E2E manifests or port locks:
+Development, production build, and Playwright outputs are separated so normal development does not fight with build/E2E manifests or port locks:
 
 ```text
 pnpm dev     → .next-dev      → port 3000
@@ -83,7 +104,7 @@ pnpm build   → .next-build
 pnpm e2e     → .next-e2e      → isolated production server on port 3100
 ```
 
-Because Playwright no longer reuses the normal development server, `pnpm dev` can remain running while `pnpm e2e` executes.
+Because Playwright does not reuse the normal development server, `pnpm dev` can remain running while `pnpm e2e` executes.
 
 ## Quality
 
@@ -105,6 +126,6 @@ corepack pnpm e2e
 
 `quality` intentionally does not shell out to nested `pnpm` commands, so it works through both direct pnpm and `corepack pnpm` invocation.
 
-The F02 CI gate is read-only, uses a frozen lockfile, runs the full static/application quality suite, and executes the full Playwright acceptance suite.
+The F03 CI gate is read-only, uses a frozen lockfile, runs Prettier, ESLint, Next route type generation, TypeScript, Vitest, production build, and the full Playwright acceptance suite.
 
 See `CONTRIBUTING.md`, `src/components/ui/README.md`, and `docs/engineering/` for engineering conventions and phase verification records.
