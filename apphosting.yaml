@@ -1,8 +1,44 @@
 # Firebase App Hosting runtime defaults for the small internal NOCScheduler workload.
-# Production Firebase project/environment values are configured in the App Hosting backend.
 runConfig:
   minInstances: 0
   maxInstances: 3
   concurrency: 40
   cpu: 1
   memoryMiB: 512
+
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyABilth8ZjgPyPsLStcIL_71VHR06NNpRY
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: nocschedule1.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: nocschedule1
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: nocschedule1.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "757713432444"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:757713432444:web:c8557af004720fab67fef9"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_USE_EMULATORS
+    value: "false"
+    availability:
+      - BUILD
+      - RUNTIME
