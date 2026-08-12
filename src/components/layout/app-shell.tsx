@@ -280,7 +280,7 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
           <Button
             aria-label={sidebarCollapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
             className="app-sidebar__collapse"
-            leadingIcon={<Icon name="panel-left" size={17} />}
+            leadingIcon={<Icon name="panel-left" size={16} />}
             onClick={() => setSidebarCollapsed((value) => !value)}
             size="sm"
             variant="ghost"
@@ -312,7 +312,7 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
           <div className="app-topbar__actions" aria-label="Aksi global">
             <Button
               className="app-command-trigger"
-              leadingIcon={<Icon name="search" size={17} />}
+              leadingIcon={<Icon name="search" size={16} />}
               onClick={() => setCommandOpen(true)}
               size="sm"
               variant="secondary"
