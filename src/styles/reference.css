@@ -1,0 +1,10 @@
+.ds-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 47.99rem) {
+  .ds-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
