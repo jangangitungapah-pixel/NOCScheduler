@@ -60,6 +60,7 @@ jobs:
           CUSTOM_MIGRATION="$(find drizzle -type f -name '*.sql' | sort | tail -n 1)"
           test -n "$CUSTOM_MIGRATION"
           cp scripts/f04-historical-guards.sql "$CUSTOM_MIGRATION"
+          pnpm exec prettier --write drizzle/meta/*.json
           pnpm db:check
 
       - name: Verify clean database install and contracts
