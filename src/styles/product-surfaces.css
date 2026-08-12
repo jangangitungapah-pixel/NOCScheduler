@@ -130,8 +130,7 @@
   flex-direction: column;
   justify-content: space-between;
   background:
-    linear-gradient(135deg, var(--surface-selected), transparent 58%),
-    var(--surface-raised);
+    linear-gradient(135deg, var(--surface-selected), transparent 58%), var(--surface-raised);
 }
 
 .product-shift-hero__top {
@@ -441,9 +440,15 @@
   background: var(--border-strong);
 }
 
-.product-date-strip i[data-shift="S1"] { background: var(--shift-s1-fg); }
-.product-date-strip i[data-shift="S2"] { background: var(--shift-s2-fg); }
-.product-date-strip i[data-shift="S3"] { background: var(--shift-s3-fg); }
+.product-date-strip i[data-shift="S1"] {
+  background: var(--shift-s1-fg);
+}
+.product-date-strip i[data-shift="S2"] {
+  background: var(--shift-s2-fg);
+}
+.product-date-strip i[data-shift="S3"] {
+  background: var(--shift-s3-fg);
+}
 
 .product-two-column,
 .product-report-layout,

@@ -29,14 +29,7 @@ export function PageHeader({ actions, badge, meta }: PageHeaderProps) {
 export function RoutePlaceholder({ meta, pathname }: { meta: RouteMeta; pathname: string }) {
   return (
     <div className={meta.workspace ? "app-page app-page--workspace" : "app-page"}>
-      <PageHeader
-        badge={
-          <Badge tone="info">
-            Shell ready
-          </Badge>
-        }
-        meta={meta}
-      />
+      <PageHeader badge={<Badge tone="info">Shell ready</Badge>} meta={meta} />
       <section
         className="app-route-placeholder"
         aria-label={`${meta.title} frontend surface status`}

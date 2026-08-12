@@ -343,8 +343,18 @@ export const dashboardFixture = {
   ],
   attention: [
     { tone: "danger" as const, label: "Coverage gap", value: "1", detail: "S3 · 18 Aug" },
-    { tone: "warning" as const, label: "Pending requests", value: "3", detail: "1 swap high priority" },
-    { tone: "info" as const, label: "Payroll state", value: "Dirty", detail: "Needs recalculation" },
+    {
+      tone: "warning" as const,
+      label: "Pending requests",
+      value: "3",
+      detail: "1 swap high priority",
+    },
+    {
+      tone: "info" as const,
+      label: "Payroll state",
+      value: "Dirty",
+      detail: "Needs recalculation",
+    },
   ],
 };
 

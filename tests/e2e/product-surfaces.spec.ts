@@ -27,7 +27,9 @@ test("my schedule stays compact and overflow-safe on mobile", async ({ page }) =
   expect(overflow.documentScrollWidth).toBeLessThanOrEqual(overflow.viewportWidth);
 });
 
-test("manage schedule exposes draft, bulk selection, validation, and publish review", async ({ page }) => {
+test("manage schedule exposes draft, bulk selection, validation, and publish review", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/schedule/manage");
 
