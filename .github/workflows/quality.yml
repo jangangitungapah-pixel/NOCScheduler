@@ -1,21 +1,22 @@
-name: Firebase Rebaseline Finalize
+name: Quality
 
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  finalize:
-    name: F04R Firebase rebaseline finalize
+  quality:
+    name: F04R Firebase quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -29,25 +30,23 @@ jobs:
           install: false
           cache: true
 
-      - name: Refresh Firebase dependency lock
-        run: pnpm install --no-frozen-lockfile
+      - name: Setup Java for Firebase emulators
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
 
-      - name: Generate canonical Firebase rebaseline files
-        run: |
-          node scripts/firebase-rebaseline-docs.mjs
-          pnpm format
-          node scripts/firebase-rebaseline-docs.mjs --finalize
-          pnpm format
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Keep workflow unchanged for bot push
-        run: |
-          git restore --source=HEAD -- .github/workflows/quality.yml
-          git rm -f scripts/firebase-rebaseline-docs.mjs
+      - name: Static and application quality gates
+        run: pnpm quality
 
-      - name: Commit canonical Firebase rebaseline
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "feat: complete WP-F04R Firebase platform rebaseline"
-          git push
+      - name: Firebase emulator contracts and Security Rules
+        run: pnpm firebase:test
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright regression
+        run: pnpm e2e
