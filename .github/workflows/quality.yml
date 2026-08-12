@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F01 bootstrap quality gate
+    name: F01 quality gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,27 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply canonical F01 formatting
-        run: pnpm format
-
-      - name: Commit canonical F01 formatting
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          if git diff --quiet; then
-            echo "No formatting changes to commit."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "chore: format F01 design system"
-          git push
-
       - name: Static and application quality gates
         run: pnpm quality
 
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Playwright smoke
-        run: pnpm e2e:smoke
+      - name: Playwright F01 acceptance
+        run: pnpm e2e

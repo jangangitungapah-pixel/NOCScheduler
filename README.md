@@ -6,9 +6,11 @@ The repository is implemented from the canonical product specifications in `docs
 
 ## Current implementation phase
 
-**WP-F00 — Project Setup & Engineering Baseline: COMPLETE — awaiting user acceptance**
+- **WP-F00 — Project Setup & Engineering Baseline: ACCEPTED**
+- **WP-F01 — Frontend Foundation & Design System: COMPLETE — awaiting user acceptance**
+- WP-F02 has not started.
 
-WP-F01 has not started. Product UI/design-system implementation begins only after explicit approval to continue.
+The F01 visual/component reference is available at `/design-system`. Application navigation shell and full feature pages begin only in later phases.
 
 ## Stack baseline
 
@@ -56,7 +58,10 @@ function pnpm { corepack pnpm @args }
 pnpm --version
 ```
 
-Then open `http://localhost:3000`.
+Then open:
+
+- application baseline: `http://localhost:3000`
+- F01 design-system reference: `http://localhost:3000/design-system`
 
 ## Quality
 
@@ -65,7 +70,7 @@ With a normal pnpm shim:
 ```bash
 pnpm quality
 pnpm exec playwright install chromium
-pnpm e2e:smoke
+pnpm e2e
 ```
 
 Without a pnpm shim on Windows:
@@ -73,9 +78,9 @@ Without a pnpm shim on Windows:
 ```powershell
 corepack pnpm quality
 corepack pnpm exec playwright install chromium
-corepack pnpm e2e:smoke
+corepack pnpm e2e
 ```
 
 `quality` intentionally does not shell out to nested `pnpm` commands, so it works through both direct pnpm and `corepack pnpm` invocation.
 
-See `CONTRIBUTING.md` for engineering conventions and `docs/engineering/WP-F00_IMPLEMENTATION_NOTES.md` for the completed phase verification record.
+See `CONTRIBUTING.md`, `src/components/ui/README.md`, and `docs/engineering/` for engineering conventions and phase verification records.
