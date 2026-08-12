@@ -6,9 +6,9 @@ The repository is implemented from the canonical product specifications in `docs
 
 ## Current implementation phase
 
-**WP-F00 — Project Setup & Engineering Baseline**
+**WP-F00 — Project Setup & Engineering Baseline: COMPLETE — awaiting user acceptance**
 
-Product UI/design-system implementation starts in WP-F01 after the F00 quality gate is accepted.
+WP-F01 has not started. Product UI/design-system implementation begins only after explicit approval to continue.
 
 ## Stack baseline
 
@@ -41,4 +41,4 @@ pnpm exec playwright install chromium
 pnpm e2e:smoke
 ```
 
-See `CONTRIBUTING.md` for engineering conventions.
+See `CONTRIBUTING.md` for engineering conventions and `docs/engineering/WP-F00_IMPLEMENTATION_NOTES.md` for the completed phase verification record.
