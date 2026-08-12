@@ -29,7 +29,10 @@ export function RoutePlaceholder({ meta, pathname }: { meta: RouteMeta; pathname
   return (
     <div className={meta.workspace ? "app-page app-page--workspace" : "app-page"}>
       <PageHeader meta={meta} />
-      <section className="app-route-placeholder" aria-label={`${meta.title} frontend surface status`}>
+      <section
+        className="app-route-placeholder"
+        aria-label={`${meta.title} frontend surface status`}
+      >
         <div className="app-route-placeholder__icon" aria-hidden="true">
           <Icon name="panel-left" size={24} />
         </div>

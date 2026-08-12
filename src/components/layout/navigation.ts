@@ -1,10 +1,6 @@
 import type { IconName } from "@/components/ui/icon";
 
-export type AppCapability =
-  | "schedule.manage"
-  | "audit.view"
-  | "settings.view"
-  | "access.manage";
+export type AppCapability = "schedule.manage" | "audit.view" | "settings.view" | "access.manage";
 
 export type NavigationItem = {
   id: string;
@@ -220,7 +216,8 @@ export function isNavigationItemActive(pathname: string, item: NavigationItem) {
 const exactRoutes: Record<string, RouteMeta> = {
   "/dashboard": {
     title: "Dashboard",
-    description: "Operational landing page untuk kondisi kerja, shift, perubahan, dan perhatian penting.",
+    description:
+      "Operational landing page untuk kondisi kerja, shift, perubahan, dan perhatian penting.",
     area: "Overview",
   },
   "/schedule": {
@@ -242,7 +239,8 @@ const exactRoutes: Record<string, RouteMeta> = {
   },
   "/schedule/manage": {
     title: "Manage Schedule",
-    description: "Power workspace untuk draft, validation, bulk assignment, publish, dan correction.",
+    description:
+      "Power workspace untuk draft, validation, bulk assignment, publish, dan correction.",
     area: "Schedule",
     workspace: true,
   },
@@ -253,7 +251,8 @@ const exactRoutes: Record<string, RouteMeta> = {
   },
   "/employees": {
     title: "Employees",
-    description: "Directory anggota NOC dan entry point ke konteks schedule, payroll, serta history.",
+    description:
+      "Directory anggota NOC dan entry point ke konteks schedule, payroll, serta history.",
     area: "People",
   },
   "/payroll": {
@@ -294,16 +293,45 @@ const exactRoutes: Record<string, RouteMeta> = {
   },
   "/settings": {
     title: "Settings",
-    description: "Canonical configuration entry point. Daily operational work tetap berada di area domain.",
+    description:
+      "Canonical configuration entry point. Daily operational work tetap berada di area domain.",
     area: "System",
   },
-  "/settings/general": { title: "General Settings", description: "Konfigurasi umum aplikasi.", area: "System" },
-  "/settings/shifts": { title: "Shift Settings", description: "Konfigurasi shift dan effective-dated version.", area: "System" },
-  "/settings/payroll": { title: "Payroll Settings", description: "Konfigurasi parameter payroll.", area: "System" },
-  "/settings/compensation": { title: "Compensation Settings", description: "Konfigurasi salary dan incentive effective-dated.", area: "System" },
-  "/settings/holidays": { title: "Holiday Settings", description: "Kalender hari libur dan operational context.", area: "System" },
-  "/settings/access": { title: "Access Settings", description: "Role, capability, scope, dan account access.", area: "System" },
-  "/settings/notifications": { title: "Notification Settings", description: "Preferensi awareness dan delivery channel.", area: "System" },
+  "/settings/general": {
+    title: "General Settings",
+    description: "Konfigurasi umum aplikasi.",
+    area: "System",
+  },
+  "/settings/shifts": {
+    title: "Shift Settings",
+    description: "Konfigurasi shift dan effective-dated version.",
+    area: "System",
+  },
+  "/settings/payroll": {
+    title: "Payroll Settings",
+    description: "Konfigurasi parameter payroll.",
+    area: "System",
+  },
+  "/settings/compensation": {
+    title: "Compensation Settings",
+    description: "Konfigurasi salary dan incentive effective-dated.",
+    area: "System",
+  },
+  "/settings/holidays": {
+    title: "Holiday Settings",
+    description: "Kalender hari libur dan operational context.",
+    area: "System",
+  },
+  "/settings/access": {
+    title: "Access Settings",
+    description: "Role, capability, scope, dan account access.",
+    area: "System",
+  },
+  "/settings/notifications": {
+    title: "Notification Settings",
+    description: "Preferensi awareness dan delivery channel.",
+    area: "System",
+  },
   "/profile": {
     title: "Profile",
     description: "Identitas user dan account-level preferences.",

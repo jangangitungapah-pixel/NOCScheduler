@@ -3,7 +3,12 @@
 import { Button } from "@/components/ui";
 import { ShellState } from "@/components/layout/shell-content";
 
-export default function AppError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function AppError({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   return (
     <ShellState
       action={

@@ -4,14 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from "react";
 
-import {
-  BottomSheet,
-  Button,
-  Dialog,
-  Icon,
-  Popover,
-  ThemeToggle,
-} from "@/components/ui";
+import { BottomSheet, Button, Dialog, Icon, Popover, ThemeToggle } from "@/components/ui";
 import {
   DESKTOP_NAVIGATION,
   MOBILE_MORE_NAVIGATION,
@@ -45,7 +38,15 @@ function closeClosestDetails(event: MouseEvent<HTMLElement>) {
   event.currentTarget.closest("details")?.removeAttribute("open");
 }
 
-function SidebarLink({ collapsed, item, pathname }: { collapsed: boolean; item: NavigationItem; pathname: string }) {
+function SidebarLink({
+  collapsed,
+  item,
+  pathname,
+}: {
+  collapsed: boolean;
+  item: NavigationItem;
+  pathname: string;
+}) {
   const active = isNavigationItemActive(pathname, item);
 
   return (
@@ -62,7 +63,13 @@ function SidebarLink({ collapsed, item, pathname }: { collapsed: boolean; item: 
   );
 }
 
-function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+function CommandPalette({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const [query, setQuery] = useState("");
   const commandItems = useMemo(() => {
     const source = [
@@ -257,7 +264,12 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
               <span className="app-sidebar__group-label">{group.label}</span>
               <div className="app-sidebar__group-items">
                 {group.items.map((item) => (
-                  <SidebarLink collapsed={sidebarCollapsed} item={item} key={item.id} pathname={pathname} />
+                  <SidebarLink
+                    collapsed={sidebarCollapsed}
+                    item={item}
+                    key={item.id}
+                    pathname={pathname}
+                  />
                 ))}
               </div>
             </div>
@@ -356,7 +368,12 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
       >
         <nav className="app-more-nav" aria-label="Navigasi lainnya">
           {moreItems.map((item) => (
-            <Link className="app-more-nav__item" href={item.href} key={item.id} onClick={() => setMoreOpen(false)}>
+            <Link
+              className="app-more-nav__item"
+              href={item.href}
+              key={item.id}
+              onClick={() => setMoreOpen(false)}
+            >
               <span className="app-more-nav__icon">
                 <Icon name={item.icon} size={18} />
               </span>
