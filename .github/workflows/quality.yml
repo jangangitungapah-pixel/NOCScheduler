@@ -66,8 +66,7 @@ jobs:
       - name: Finalize F04R handoff and restore read-only CI
         run: |
           node scripts/firebase-rebaseline-docs.mjs --finalize
-          pnpm exec prettier --write README.md docs/engineering/WP-F04R_FIREBASE_REBASELINE_NOTES.md .github/workflows/quality.yml
-          pnpm quality
+          pnpm format
           git rm scripts/firebase-rebaseline-docs.mjs
 
       - name: Commit canonical Firebase rebaseline
