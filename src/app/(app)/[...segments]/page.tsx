@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { RoutePlaceholder } from "@/components/layout/shell-content";
 import { getRouteMeta } from "@/components/layout/navigation";
+import { ProductSurface } from "@/modules/product-surfaces/product-surface";
 
 type CanonicalRouteProps = {
   params: Promise<{ segments: string[] }>;
@@ -25,5 +25,5 @@ export default async function CanonicalRoutePage({ params }: CanonicalRouteProps
 
   if (!meta) notFound();
 
-  return <RoutePlaceholder meta={meta} pathname={pathname} />;
+  return <ProductSurface meta={meta} pathname={pathname} />;
 }

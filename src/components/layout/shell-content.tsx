@@ -7,15 +7,16 @@ import type { RouteMeta } from "./navigation";
 type PageHeaderProps = {
   meta: RouteMeta;
   actions?: ReactNode;
+  badge?: ReactNode;
 };
 
-export function PageHeader({ actions, meta }: PageHeaderProps) {
+export function PageHeader({ actions, badge, meta }: PageHeaderProps) {
   return (
     <header className="app-page-header">
       <div className="app-page-header__copy">
         <div className="app-page-header__eyebrow-row">
           <span className="app-page-header__eyebrow">{meta.area}</span>
-          <Badge tone="info">Shell ready</Badge>
+          {badge}
         </div>
         <h1 className="app-page-header__title">{meta.title}</h1>
         <p className="app-page-header__description">{meta.description}</p>
@@ -28,7 +29,14 @@ export function PageHeader({ actions, meta }: PageHeaderProps) {
 export function RoutePlaceholder({ meta, pathname }: { meta: RouteMeta; pathname: string }) {
   return (
     <div className={meta.workspace ? "app-page app-page--workspace" : "app-page"}>
-      <PageHeader meta={meta} />
+      <PageHeader
+        badge={
+          <Badge tone="info">
+            Shell ready
+          </Badge>
+        }
+        meta={meta}
+      />
       <section
         className="app-route-placeholder"
         aria-label={`${meta.title} frontend surface status`}

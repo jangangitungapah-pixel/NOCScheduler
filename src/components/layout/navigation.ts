@@ -389,6 +389,15 @@ const dynamicRoutes: Array<{ pattern: RegExp; meta: RouteMeta }> = [
     },
   },
   {
+    pattern: /^\/employees\/[^/]+\/history$/,
+    meta: {
+      title: "Employee History",
+      description: "Employee-scoped business history dan audit-linked operational context.",
+      area: "People",
+      workspace: true,
+    },
+  },
+  {
     pattern: /^\/payroll\/[^/]+$/,
     meta: {
       title: "Monthly Payroll",
