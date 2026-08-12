@@ -1,11 +1,12 @@
 # WP-F04R — Firebase Platform & Domain Foundation — Implementation Notes
 
-> Status: **IN PROGRESS — architecture rebaseline before WP-F05**  
+> Status: **COMPLETE — awaiting user acceptance**  
 > Workplan: `WP-F04R`  
 > Canonical amendment: `PRD-21_Firebase_Platform_Architecture_Amendment.md`  
 > Primary platform: Firebase App Hosting + Firebase Authentication + Cloud Firestore  
 > Local/test platform: Firebase Local Emulator Suite  
-> WP-F05: **NOT STARTED**
+> WP-F05: **NOT STARTED**  
+> Bootstrap verification run: `31633756166`
 
 ## Why F04R exists
 

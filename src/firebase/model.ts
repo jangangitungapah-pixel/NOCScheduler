@@ -29,7 +29,8 @@ export const firestoreCollections = {
   idempotencyKeys: "idempotencyKeys",
 } as const;
 
-export type FirestoreCollectionName = (typeof firestoreCollections)[keyof typeof firestoreCollections];
+export type FirestoreCollectionName =
+  (typeof firestoreCollections)[keyof typeof firestoreCollections];
 
 export interface VersionedDocument {
   rowVersion: number;

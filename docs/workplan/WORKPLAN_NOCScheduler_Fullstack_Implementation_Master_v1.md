@@ -11,7 +11,7 @@
 > **Default Theme:** Light  
 > **Theme Support:** Light + Dark parity required  
 > **Platforms:** Desktop Web + Mobile Web with equal product priority  
-> **Canonical Product References:** PRD-01 through PRD-20
+> **Canonical Product References:** PRD-01 through PRD-21
 
 ---
 
@@ -93,7 +93,7 @@ UI
 → Authorization
 → Command / Query
 → Domain Service
-→ Repository / PostgreSQL
+→ Repository / Cloud Firestore
 → Audit / Notification Policy
 ```
 
@@ -162,7 +162,7 @@ Sebuah phase hanya dapat ditandai **DONE** jika seluruh kondisi relevan berikut 
 - Light/Dark parity lulus bila phase UI,
 - keyboard/accessibility smoke lulus bila phase UI,
 - high-risk mutation memiliki authorization + audit bila relevan,
-- migration telah direview bila schema berubah,
+- Firestore data contract, index, atau Security Rules change telah direview bila persistence boundary berubah,
 - tidak ada unresolved P0/P1 defect yang berasal dari phase,
 - dokumentasi/handoff phase diperbarui,
 - commit history tetap dapat ditelusuri.
@@ -177,7 +177,7 @@ Sebuah phase hanya dapat ditandai **DONE** jika seluruh kondisi relevan berikut 
 | WP-F01 | Frontend Foundation & Design System | Semantic tokens + shared high-fidelity component system |
 | WP-F02 | Application Shell, Navigation & Responsive Frame | Desktop/mobile shell final dengan Light/Dark |
 | WP-F03 | High-Fidelity Frontend Product Surfaces | Seluruh page utama tersedia dengan typed fixtures |
-| WP-F04 | Database & Domain Foundation | PostgreSQL schema, migrations, repositories, date/money core |
+| WP-F04R | Firebase Platform & Domain Foundation | App Hosting + Firebase Auth/Firestore/Admin foundation + date/money core |
 | WP-F05 | Authentication, Authorization, Employee & Settings | User/access/config foundation siap dipakai |
 | WP-F06 | Scheduling Engine & Schedule API | Canonical schedule domain siap dan tervalidasi |
 | WP-F07 | Scheduling Full-Stack Experience | Schedule UI terhubung backend secara penuh |
@@ -537,48 +537,50 @@ UI fixture tidak boleh menjadi sumber business logic final.
 
 ---
 
-# 10. WP-F04 — Database & Domain Foundation
+# 10. WP-F04R — Firebase Platform & Domain Foundation
 
 ## Goal
 
-Membangun PostgreSQL data foundation yang menjaga historical correctness sejak awal.
+Membangun Firebase-managed platform foundation yang menjaga historical correctness tanpa self-managed application/database server.
+
+WP-F04 PostgreSQL/Drizzle sebelumnya **superseded** sebelum acceptance dan disimpan hanya sebagai historical engineering record. PRD-21 menjadi architecture amendment yang mengikat phase ini dan semua phase setelahnya.
 
 ## Primary PRD References
 
 - PRD-03 through PRD-09
-- PRD-14
-- PRD-15
-- PRD-16
-- PRD-19
+- PRD-14 through PRD-16
+- PRD-19/20
+- PRD-21
 
 ## Tasks
 
-- **F04-01** Configure PostgreSQL local/test environment.
-- **F04-02** Configure Drizzle schema + Drizzle Kit migration flow.
-- **F04-03** Implement identity/employee tables.
-- **F04-04** Implement role/permission/user-role tables.
-- **F04-05** Implement shift type + effective version model.
-- **F04-06** Implement schedule period/version/assignment model.
-- **F04-07** Implement request/exception/swap/replacement/overtime model.
-- **F04-08** Implement compensation/salary/incentive effective version model.
-- **F04-09** Implement payroll period/record/revision/item/source/adjustment model.
-- **F04-10** Implement settings/holiday/notification model.
-- **F04-11** Implement append-oriented audit model.
-- **F04-12** Implement row version/concurrency fields.
-- **F04-13** Add DB indexes dan unique constraints.
-- **F04-14** Add historical delete/cascade guards.
-- **F04-15** Implement central `Asia/Jakarta` business-date module.
-- **F04-16** Implement integer-IDR money module.
-- **F04-17** Create deterministic seeds/fixtures.
-- **F04-18** Database contract tests.
+- **F04R-01** Remove PostgreSQL/Drizzle/Docker runtime dependencies and CI assumptions.
+- **F04R-02** Configure Firebase JS SDK + Firebase Admin SDK.
+- **F04R-03** Configure Firebase App Hosting runtime baseline.
+- **F04R-04** Configure Firebase Local Emulator Suite with isolated `demo-*` project.
+- **F04R-05** Define typed canonical Firestore collection/document contracts.
+- **F04R-06** Define Firestore composite-index baseline from canonical queries.
+- **F04R-07** Start Firestore Security Rules fail-closed.
+- **F04R-08** Implement stable identity/version/effective-date Firestore patterns.
+- **F04R-09** Implement optimistic `rowVersion` transaction helper.
+- **F04R-10** Implement create-only immutable historical-write helper.
+- **F04R-11** Preserve central `Asia/Jakarta` business-date module.
+- **F04R-12** Preserve integer-IDR money module.
+- **F04R-13** Implement deterministic emulator seed with live-project refusal guard.
+- **F04R-14** Implement Firebase Admin/Firestore contract tests.
+- **F04R-15** Implement Firestore Security Rules emulator tests.
+- **F04R-16** Rebaseline PRD/workplan platform assumptions before F05.
+- **F04R-17** Retain complete F00–F03 product regression suite.
 
 ## Exit Gate
 
-- migration clean install dari zero database berhasil,
-- historical model tidak destructive,
-- duplicate critical state ditolak,
-- effective-version constraints diuji,
-- test database dapat di-reset deterministically.
+- no Docker/PostgreSQL/Drizzle prerequisite remains,
+- Firebase emulator foundation is deterministic,
+- direct Firestore browser access is fail-closed,
+- immutable/versioned Firestore helpers are tested,
+- existing UI/domain regression stays green,
+- final CI is read-only,
+- WP-F05 has not started.
 
 ---
 
@@ -586,39 +588,40 @@ Membangun PostgreSQL data foundation yang menjaga historical correctness sejak a
 
 ## Goal
 
-Membuat identity, access, employee profile, dan configurable operational settings siap production pattern.
+Membuat Firebase identity, access, employee profile, dan configurable operational settings siap production pattern.
 
 ## Primary PRD References
 
 - PRD-02
-- PRD-07
-- PRD-08
-- PRD-09
+- PRD-07 through PRD-09
 - PRD-14 through PRD-16
+- PRD-21
 
 ## Tasks
 
-- **F05-01** Integrate Better Auth.
-- **F05-02** Secure cookie session + origin/CSRF baseline.
+- **F05-01** Integrate Firebase Authentication.
+- **F05-02** Implement secure Firebase ID-token/session verification and origin/CSRF baseline for server mutations.
 - **F05-03** Login/logout/session expiry UX.
-- **F05-04** Account disable/session revoke.
+- **F05-04** Account disable + token/session revocation strategy.
 - **F05-05** Implement centralized capability service.
 - **F05-06** Seed baseline roles: NOC Member, Scheduler/Supervisor, Administrator.
-- **F05-07** Implement permission scopes.
-- **F05-08** Implement route/API authorization guards.
+- **F05-07** Implement permission scopes in Firestore-backed access documents.
+- **F05-08** Implement route/API server authorization guards.
 - **F05-09** Last Administrator protection.
-- **F05-10** Employee CRUD/archive/inactive workflow.
+- **F05-10** Employee CRUD/archive/inactive workflow on Firestore.
 - **F05-11** Shift configuration with effective dating.
 - **F05-12** Salary and incentive configuration with effective dating.
 - **F05-13** Holiday/settings configuration.
 - **F05-14** Audit access/config mutation.
-- **F05-15** Replace fixture data on Employee/Settings/Access pages dengan real API.
-- **F05-16** Adversarial authorization tests.
+- **F05-15** Replace fixture data on Employee/Settings/Access pages with real Firebase-backed API/read models.
+- **F05-16** Add capability-aware Firestore Security Rules only for deliberately exposed client reads.
+- **F05-17** Adversarial authorization + Security Rules emulator tests.
 
 ## Exit Gate
 
 - no UI-only permission boundary,
 - self privilege escalation impossible,
+- direct client writes to high-risk business collections remain prohibited,
 - all configuration mutation audited,
 - employee history retained after account disable,
 - Settings UI remains consistent with design system.
@@ -1092,7 +1095,7 @@ Membuktikan bahwa integrated application memenuhi PRD-19 Definition of Release R
 
 - **F17-01** Full static gate: format/lint/typecheck/build.
 - **F17-02** Full unit/domain suite.
-- **F17-03** Full DB/integration suite.
+- **F17-03** Full Firebase emulator/integration suite.
 - **F17-04** API contract suite.
 - **F17-05** Authorization/security suite.
 - **F17-06** Scheduling regression suite.
@@ -1105,8 +1108,8 @@ Membuktikan bahwa integrated application memenuhi PRD-19 Definition of Release R
 - **F17-13** Visual regression full critical surfaces.
 - **F17-14** Accessibility full critical flow.
 - **F17-15** Small/Normal/Stress fixture performance test.
-- **F17-16** Migration from empty DB test.
-- **F17-17** Migration from previous schema snapshot test.
+- **F17-16** Empty-emulator deterministic seed + canonical Firestore contract test.
+- **F17-17** Firestore index/rules/data-contract compatibility test from previous release fixtures.
 - **F17-18** Exploratory QA.
 - **F17-19** Internal UAT.
 - **F17-20** Release blocker triage and closure.
@@ -1140,11 +1143,11 @@ Login
 
 ---
 
-# 24. WP-F18 — CI/CD, Staging, Backup & Observability
+# 24. WP-F18 — Firebase CI/CD, Staging, Backup & Observability
 
 ## Goal
 
-Membuat production environment operable, observable, recoverable, dan rollback-capable.
+Membuat Firebase production environment operable, observable, recoverable, cost-aware, dan rollback-capable.
 
 ## Primary PRD References
 
@@ -1152,36 +1155,37 @@ Membuat production environment operable, observable, recoverable, dan rollback-c
 - PRD-16
 - PRD-19
 - PRD-20
+- PRD-21
 
 ## Tasks
 
 - **F18-01** Finalize CI merge gate.
-- **F18-02** Create Preview environment contract.
-- **F18-03** Create isolated Staging environment.
-- **F18-04** Provision managed PostgreSQL staging/prod.
-- **F18-05** Configure runtime secrets per environment.
-- **F18-06** Configure production domain/HTTPS.
-- **F18-07** Configure immutable release identification.
-- **F18-08** Implement `/api/health/live`.
-- **F18-09** Implement `/api/health/ready`.
+- **F18-02** Configure Firebase App Hosting GitHub integration and preview/rollout policy.
+- **F18-03** Create isolated Firebase staging project/environment.
+- **F18-04** Provision production Firebase project + Firestore database.
+- **F18-05** Configure Firebase Authentication production providers/domains.
+- **F18-06** Configure App Hosting runtime environment + Secret Manager references.
+- **F18-07** Configure production custom domain/managed HTTPS.
+- **F18-08** Configure immutable release/build identification.
+- **F18-09** Implement `/api/health/live` and Firebase-aware readiness checks where useful.
 - **F18-10** Structured logging with request/correlation/release IDs.
-- **F18-11** Metrics for request, DB, critical business command failure.
+- **F18-11** Metrics for request, Firestore, Auth, and critical business-command failures.
 - **F18-12** Actionable alerting + severity policy.
-- **F18-13** Migration deployment job.
-- **F18-14** Application rollback procedure.
-- **F18-15** Backup/PITR configuration.
+- **F18-13** Firestore index/Security Rules deployment validation.
+- **F18-14** App Hosting rollout/rollback procedure.
+- **F18-15** Configure Firestore backup/export/recovery strategy appropriate to selected Firebase/Google Cloud capabilities.
 - **F18-16** Backup health monitoring.
 - **F18-17** Restore runbook.
 - **F18-18** Execute successful isolated restore drill.
-- **F18-19** Verify target `RPO <= 15 minutes`.
-- **F18-20** Verify target `RTO <= 2 hours` through drill/measurement where feasible.
+- **F18-19** Measure and document practical RPO/RTO for the selected managed backup strategy.
+- **F18-20** Configure budget alerts and cost monitoring for App Hosting/Firestore/Auth supporting services.
 - **F18-21** Incident response runbook.
 - **F18-22** Secret rotation runbook.
-- **F18-23** Production access/DB least-privilege review.
+- **F18-23** Production IAM/Admin SDK least-privilege review.
 
 ## Exit Gate
 
-Production Readiness Review PRD-20 passes, including **proven restore**, not only configured backup.
+Production Readiness Review PRD-20/21 passes, including proven restore and controlled App Hosting rollback—not only configured infrastructure.
 
 ---
 
@@ -1203,7 +1207,7 @@ Harus tersedia:
 
 - accepted Release Candidate,
 - successful staging deploy,
-- migration verified,
+- Firestore indexes/rules/data-contract deployment verified,
 - backup/PITR healthy,
 - restore drill successful,
 - rollback procedure tested/documented,
@@ -1217,8 +1221,8 @@ Harus tersedia:
 ```text
 Select exact accepted commit
 → Confirm backup/recovery point
-→ Run production migration
-→ Deploy application revision
+→ Deploy Firestore indexes/rules/config changes
+→ Deploy App Hosting application revision
 → Verify readiness/liveness
 → Run business smoke
 → Verify auth/session
@@ -1249,9 +1253,9 @@ Select exact accepted commit
 
 ## Post-Go-Live Tasks
 
-- **F19-01** Verify release/commit/schema metadata.
+- **F19-01** Verify release/commit/Firestore contract metadata.
 - **F19-02** Monitor error rate/latency.
-- **F19-03** Monitor DB pressure.
+- **F19-03** Monitor Firestore usage/latency/quota pressure.
 - **F19-04** Monitor authentication failures.
 - **F19-05** Monitor schedule/payroll command failures.
 - **F19-06** Confirm backup continues after release.
@@ -1280,24 +1284,25 @@ NOCScheduler dianggap **Full-Stack Production v1** hanya jika:
 |---|---|
 | PRD-01 Product Vision | All phases; especially F03, F07, F10, F19 |
 | PRD-02 Feature Specification | F03, F05–F13 |
-| PRD-03 Scheduling Logic | F04, F06, F07, F17 |
-| PRD-04 Payroll Logic | F04, F09, F10, F12, F17 |
-| PRD-05 Exceptions/Leave/Overtime | F04, F08, F09, F17 |
+| PRD-03 Scheduling Logic | F04R, F06, F07, F17 |
+| PRD-04 Payroll Logic | F04R, F09, F10, F12, F17 |
+| PRD-05 Exceptions/Leave/Overtime | F04R, F08, F09, F17 |
 | PRD-06 Information Architecture | F02, F03, F07–F13 |
 | PRD-07 Roles & Permissions | F02, F05, F14, F17 |
-| PRD-08 Data Model | F04, F05, F06, F08, F09 |
-| PRD-09 Audit & History | F04, F05–F13, F14 |
+| PRD-08 Data Model | F04R, F05, F06, F08, F09 |
+| PRD-09 Audit & History | F04R, F05–F13, F14 |
 | PRD-10 UI/UX | F01–F03, F07, F08, F10–F16 |
 | PRD-11 Design System | F01–F03, F15, F16 |
 | PRD-12 Responsive/Mobile | F02, F03, F07, F08, F10, F12, F13, F15 |
 | PRD-13 UI Polish | F01–F03, F15, F16, F17 |
-| PRD-14 Technical Architecture | F00, F04–F14, F18 |
+| PRD-14 Technical Architecture | F00, F04R–F14, F18 |
 | PRD-15 API Contract | F05–F14, F17 |
 | PRD-16 Security | F00, F05, F06, F08, F09, F12–F14, F17–F19 |
 | PRD-17 Reporting | F03, F12, F17 |
 | PRD-18 Notifications | F03, F08, F09, F13, F17 |
 | PRD-19 QA | Every phase gate; especially F16–F19 |
 | PRD-20 Operations | F00, F18, F19 |
+| PRD-21 Firebase Platform Amendment | F04R, F05–F19 |
 
 ---
 
@@ -1340,7 +1345,7 @@ Recommended commit granularity examples:
 chore: bootstrap Next.js strict project foundation
 feat: add semantic light and dark theme tokens
 feat: build responsive application shell
-feat: add employee and role database schema
+feat: add employee and role Firestore contracts
 feat: implement capability authorization service
 feat: implement schedule work-date resolver
 feat: add schedule publication transaction
@@ -1375,7 +1380,7 @@ Implementation phase harus dihentikan untuk memperbaiki akar masalah jika ditemu
 - historical data drift,
 - authorization bypass,
 - schedule partial publish,
-- destructive migration risk,
+- destructive or non-recoverable Firestore data migration risk,
 - audit evidence missing pada high-risk mutation,
 - cross-midnight date corruption,
 - mobile critical flow unusable,

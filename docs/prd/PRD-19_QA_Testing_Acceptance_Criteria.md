@@ -1,5 +1,7 @@
 # PRD-19 — QA, Testing & Acceptance Criteria
 
+> **Architecture Amendment:** Platform-specific persistence, authentication, hosting, deployment, and database assumptions in this document are superseded where they conflict with **PRD-21 — Firebase Platform Architecture Amendment**. Product/business requirements remain canonical.
+
 > **Product:** NOCScheduler  
 > **Document Type:** Product Requirements Document — QA, Testing & Acceptance Criteria  
 > **Document ID:** PRD-19  

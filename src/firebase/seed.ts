@@ -87,9 +87,36 @@ for (const [userId, displayName, email, employeeId, employeeCode] of users) {
 }
 
 for (const shift of [
-  { id: "shift-s1", code: "S1", versionId: "shift-s1-v1", name: "Shift 1 / Pagi", start: "07:00", end: "15:00", crossesMidnight: false, order: 1 },
-  { id: "shift-s2", code: "S2", versionId: "shift-s2-v1", name: "Shift 2 / Siang", start: "15:00", end: "23:00", crossesMidnight: false, order: 2 },
-  { id: "shift-s3", code: "S3", versionId: "shift-s3-v1", name: "Shift 3 / Malam", start: "23:00", end: "07:00", crossesMidnight: true, order: 3 },
+  {
+    id: "shift-s1",
+    code: "S1",
+    versionId: "shift-s1-v1",
+    name: "Shift 1 / Pagi",
+    start: "07:00",
+    end: "15:00",
+    crossesMidnight: false,
+    order: 1,
+  },
+  {
+    id: "shift-s2",
+    code: "S2",
+    versionId: "shift-s2-v1",
+    name: "Shift 2 / Siang",
+    start: "15:00",
+    end: "23:00",
+    crossesMidnight: false,
+    order: 2,
+  },
+  {
+    id: "shift-s3",
+    code: "S3",
+    versionId: "shift-s3-v1",
+    name: "Shift 3 / Malam",
+    start: "23:00",
+    end: "07:00",
+    crossesMidnight: true,
+    order: 3,
+  },
 ]) {
   batch.set(db.collection(firestoreCollections.shiftTypes).doc(shift.id), {
     code: shift.code,

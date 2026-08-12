@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { assertIntegerIdr, assertNoEffectiveRangeOverlap, effectiveRangesOverlap } from "./invariants";
+import {
+  assertIntegerIdr,
+  assertNoEffectiveRangeOverlap,
+  effectiveRangesOverlap,
+} from "./invariants";
 import { firestoreCollections } from "./model";
 
 describe("Firebase domain foundation", () => {
@@ -18,10 +22,9 @@ describe("Firebase domain foundation", () => {
     ).toBe(true);
 
     expect(() =>
-      assertNoEffectiveRangeOverlap(
-        { effectiveFrom: "2026-08-01", effectiveTo: null },
-        [{ effectiveFrom: "2026-01-01", effectiveTo: "2026-09-01" }],
-      ),
+      assertNoEffectiveRangeOverlap({ effectiveFrom: "2026-08-01", effectiveTo: null }, [
+        { effectiveFrom: "2026-01-01", effectiveTo: "2026-09-01" },
+      ]),
     ).toThrow(/overlaps/i);
   });
 

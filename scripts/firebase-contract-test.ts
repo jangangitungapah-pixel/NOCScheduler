@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 
 import { getAdminFirestore } from "../src/firebase/admin";
 import { firestoreCollections } from "../src/firebase/model";
-import { createImmutableDocument, updateWithExpectedVersion } from "../src/firebase/repository-guards";
+import {
+  createImmutableDocument,
+  updateWithExpectedVersion,
+} from "../src/firebase/repository-guards";
 
 if (!process.env.FIRESTORE_EMULATOR_HOST) {
   throw new Error("firebase:contract requires the Firestore emulator.");
@@ -15,7 +18,10 @@ const shifts = await db.collection(firestoreCollections.shiftTypes).get();
 assert.equal(employees.size, 3, "deterministic seed must create three employees");
 assert.equal(shifts.size, 3, "deterministic seed must create three shift identities");
 
-const timezone = await db.collection(firestoreCollections.systemSettings).doc("default_timezone").get();
+const timezone = await db
+  .collection(firestoreCollections.systemSettings)
+  .doc("default_timezone")
+  .get();
 assert.equal(timezone.data()?.value, "Asia/Jakarta");
 
 const immutableRef = db.collection(firestoreCollections.auditEvents).doc("f04r-contract-audit");

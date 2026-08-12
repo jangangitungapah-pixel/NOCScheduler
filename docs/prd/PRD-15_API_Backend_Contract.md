@@ -1,5 +1,7 @@
 # PRD-15 — API & Backend Contract
 
+> **Architecture Amendment:** Platform-specific persistence, authentication, hosting, deployment, and database assumptions in this document are superseded where they conflict with **PRD-21 — Firebase Platform Architecture Amendment**. Product/business requirements remain canonical.
+
 > **Product:** NOCScheduler  
 > **Document Type:** Product Requirements Document — API & Backend Contract  
 > **Document ID:** PRD-15  

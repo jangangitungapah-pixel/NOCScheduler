@@ -5,7 +5,10 @@ function rangeEnd(value: string | null) {
 }
 
 export function effectiveRangesOverlap(left: EffectiveRange, right: EffectiveRange) {
-  return left.effectiveFrom < rangeEnd(right.effectiveTo) && right.effectiveFrom < rangeEnd(left.effectiveTo);
+  return (
+    left.effectiveFrom < rangeEnd(right.effectiveTo) &&
+    right.effectiveFrom < rangeEnd(left.effectiveTo)
+  );
 }
 
 export function assertNoEffectiveRangeOverlap(

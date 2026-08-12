@@ -1,10 +1,14 @@
 # WP-F04 — Database & Domain Foundation — Implementation Notes
 
-> Status: **COMPLETE — awaiting user acceptance**  
+> Status: **SUPERSEDED by WP-F04R / PRD-21 — historical engineering record only**  
 > Workplan: `WP-F04`  
 > PRD anchors: PRD-03 through PRD-09, PRD-14, PRD-15, PRD-16, PRD-19  
 > Final implementation commit before handoff docs: `f6ce3b07afb4b8ac4acfbf691ad3f8efef80b1b9`  
 > Final read-only technical verification run: `31627520614`
+
+## Supersession notice
+
+This PostgreSQL/Drizzle implementation was completed technically but was superseded before acceptance when the owner selected a fully managed Firebase architecture. It is retained only to explain repository history. Active implementation must follow `PRD-21_Firebase_Platform_Architecture_Amendment.md` and `WP-F04R`.
 
 ## Goal
 

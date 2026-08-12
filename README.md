@@ -11,7 +11,7 @@ The repository is implemented from the canonical product specifications in `docs
 - **WP-F02 — Application Shell, Navigation & Responsive Frame: ACCEPTED**
 - **WP-F03 — High-Fidelity Frontend Product Surfaces: ACCEPTED**
 - **WP-F04 — PostgreSQL/Drizzle Database Foundation: SUPERSEDED by Firebase rebaseline**
-- **WP-F04R — Firebase Platform & Domain Foundation: IN PROGRESS**
+- **WP-F04R — Firebase Platform & Domain Foundation: COMPLETE — awaiting user acceptance**
 - WP-F05 has not started.
 
 The architecture pivot is canonicalized by `docs/prd/PRD-21_Firebase_Platform_Architecture_Amendment.md`. Product behavior and historical correctness requirements remain intact; only the infrastructure/persistence/authentication platform is being rebaselined before WP-F05.
