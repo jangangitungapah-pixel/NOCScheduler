@@ -16,12 +16,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
     "e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium",
-    "quality": "prettier --check . && eslint . --max-warnings=0 && tsc --noEmit && vitest run && next build"
+    "quality": "prettier --check . && eslint . --max-warnings=0 && next typegen && tsc --noEmit && vitest run && next build"
   },
   "dependencies": {
     "next": "16.2.12",
