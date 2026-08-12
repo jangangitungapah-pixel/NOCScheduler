@@ -15,13 +15,17 @@ WP-F01 has not started. Product UI/design-system implementation begins only afte
 - Next.js 16 App Router
 - React 19
 - TypeScript strict
-- pnpm
+- pnpm 11.17.0
 - Tailwind CSS
 - Zod
 - Vitest + Testing Library
 - Playwright
 
 ## Development
+
+Requires Node.js 24.x. The project pins pnpm in `package.json`.
+
+### Standard setup
 
 ```bash
 corepack enable
@@ -31,14 +35,47 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
+### Windows PowerShell without Administrator rights
+
+Some Windows Node installations live under `C:\Program Files\nodejs`. In that setup, `corepack enable` can fail with `EPERM` because Corepack cannot create the `pnpm` shim next to the Node executable.
+
+You do not need to weaken Windows permissions or run the project as Administrator. Corepack can invoke the pinned package manager directly:
+
+```powershell
+corepack install
+Copy-Item .env.example .env.local -Force
+corepack pnpm --version
+corepack pnpm install --frozen-lockfile
+corepack pnpm dev
+```
+
+If you prefer the short `pnpm` command for the current PowerShell session, define a temporary function:
+
+```powershell
+function pnpm { corepack pnpm @args }
+pnpm --version
+```
+
 Then open `http://localhost:3000`.
 
 ## Quality
+
+With a normal pnpm shim:
 
 ```bash
 pnpm quality
 pnpm exec playwright install chromium
 pnpm e2e:smoke
 ```
+
+Without a pnpm shim on Windows:
+
+```powershell
+corepack pnpm quality
+corepack pnpm exec playwright install chromium
+corepack pnpm e2e:smoke
+```
+
+`quality` intentionally does not shell out to nested `pnpm` commands, so it works through both direct pnpm and `corepack pnpm` invocation.
 
 See `CONTRIBUTING.md` for engineering conventions and `docs/engineering/WP-F00_IMPLEMENTATION_NOTES.md` for the completed phase verification record.

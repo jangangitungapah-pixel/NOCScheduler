@@ -9,19 +9,42 @@ Implementation must follow `docs/prd/PRD-01` through `PRD-20` and the current ma
 - Node.js 24.x
 - pnpm 11.x (exact project package-manager version is pinned in `package.json`)
 
-Enable Corepack if pnpm is not available:
+Preferred setup when Corepack can create package-manager shims:
 
 ```bash
 corepack enable
 corepack install
 ```
 
+On Windows, `corepack enable` can fail with `EPERM` when Node.js is installed under a protected directory such as `C:\Program Files\nodejs`. In that case, do not loosen filesystem permissions just to create the shim. Invoke pnpm directly through Corepack instead:
+
+```powershell
+corepack install
+corepack pnpm --version
+```
+
+For convenience in the current PowerShell session only:
+
+```powershell
+function pnpm { corepack pnpm @args }
+```
+
 ## Local bootstrap
+
+Standard shell:
 
 ```bash
 cp .env.example .env.local
 pnpm install --frozen-lockfile
 pnpm dev
+```
+
+Windows PowerShell without a pnpm shim:
+
+```powershell
+Copy-Item .env.example .env.local -Force
+corepack pnpm install --frozen-lockfile
+corepack pnpm dev
 ```
 
 ## Quality gates
@@ -38,7 +61,19 @@ pnpm exec playwright install chromium
 pnpm e2e:smoke
 ```
 
-Use `pnpm quality` for the non-browser gates.
+The equivalent no-shim Windows commands are:
+
+```powershell
+corepack pnpm format:check
+corepack pnpm lint
+corepack pnpm typecheck
+corepack pnpm test
+corepack pnpm build
+corepack pnpm exec playwright install chromium
+corepack pnpm e2e:smoke
+```
+
+Use `pnpm quality` or `corepack pnpm quality` for the non-browser gates. The `quality` script directly invokes the underlying tools rather than recursively requiring a global `pnpm` command.
 
 ## Engineering rules
 
