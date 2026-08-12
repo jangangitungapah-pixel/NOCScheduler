@@ -9,14 +9,71 @@ The repository is implemented from the canonical product specifications in `docs
 - **WP-F00 — Project Setup & Engineering Baseline: ACCEPTED**
 - **WP-F01 — Frontend Foundation & Design System: ACCEPTED**
 - **WP-F02 — Application Shell, Navigation & Responsive Frame: ACCEPTED**
-- **WP-F03 — High-Fidelity Frontend Product Surfaces: COMPLETE — awaiting user acceptance**
-- WP-F04 has not started.
+- **WP-F03 — High-Fidelity Frontend Product Surfaces: ACCEPTED**
+- **WP-F04 — Database & Domain Foundation: COMPLETE — awaiting user acceptance**
+- WP-F05 has not started.
 
-WP-F03 replaces shell placeholders with high-fidelity, fixture-driven product surfaces. The fixtures are frontend development contracts only: they are shaped toward the future domain/API model but are **not** persistent data or authoritative schedule/payroll business logic.
+WP-F04 establishes the PostgreSQL/Drizzle historical data foundation. The high-fidelity WP-F03 product surfaces still use frontend fixtures until later full-stack phases intentionally replace them with server-authoritative APIs.
+
+## F04 database foundation
+
+F04 adds:
+
+- PostgreSQL 17 local/test service through `compose.yaml`,
+- Drizzle ORM schema modules and Drizzle Kit migration workflow,
+- committed zero-database migrations under `drizzle/`,
+- identity + employee + team entities,
+- role/permission/effective user-role entities,
+- stable shift identities + effective-dated shift versions,
+- schedule period/version/assignment history,
+- canonical schedule request parent + exception/swap/replacement/overtime records,
+- effective-dated salary and shift incentive versions,
+- payroll period/record/revision/item/source/adjustment history,
+- holidays, settings, notifications, and append-oriented audit events,
+- row-version fields and critical indexes/unique constraints,
+- PostgreSQL historical/effective-range guards,
+- central `Asia/Jakarta` business-date utilities,
+- integer-IDR money utilities,
+- deterministic seed data,
+- executable PostgreSQL contract tests.
+
+The database model intentionally treats historical correctness as part of application correctness. Published schedule history, effective-dated compensation, payroll revisions, and audit evidence are not modeled as disposable current-state rows.
+
+## Local PostgreSQL setup
+
+Start PostgreSQL:
+
+```bash
+docker compose up -d postgres
+```
+
+Create local environment configuration and install dependencies:
+
+```bash
+cp .env.example .env.local
+pnpm install --frozen-lockfile
+```
+
+Apply the committed migrations and deterministic seed:
+
+```bash
+pnpm db:migrate
+pnpm db:seed
+```
+
+Useful database commands:
+
+```bash
+pnpm db:check
+pnpm db:studio
+pnpm test:db
+```
+
+`pnpm db:reset:test` is destructive and exists for disposable local/test databases only. It drops and recreates the public schema before migration/seed verification.
 
 ## F03 review routes
 
-With `pnpm dev` running on port 3000, review both Desktop and Mobile, Light and Dark Mode:
+With `pnpm dev` running on port 3000, the accepted high-fidelity fixture surfaces remain available on:
 
 - Dashboard: `http://localhost:3000/dashboard`
 - My Schedule: `http://localhost:3000/schedule/me`
@@ -36,17 +93,7 @@ With `pnpm dev` running on port 3000, review both Desktop and Mobile, Light and 
 - login boundary outside the shell: `http://localhost:3000/login`
 - F01 design-system reference: `http://localhost:3000/design-system`
 
-The root route `/` currently redirects the temporary authenticated fixture to `/dashboard`. Real authentication/session routing is intentionally deferred to WP-F05.
-
-## F03 responsive contracts
-
-- Desktop keeps dense operational workspaces where scanning and comparison matter.
-- My Schedule supports Month, Week, and Agenda interaction; compact mobile stays agenda-first.
-- Team Schedule recomposes on mobile into real `By Day` and `By Employee` modes instead of shrinking the desktop matrix.
-- Manage Schedule recomposes on mobile into focused date → employee → work-state selection and validation/publish review.
-- Shift 3 cross-midnight timing is explicit as `23:00–07:00 (+1 hari)` where relevant.
-- Mobile acceptance guards against accidental page-level horizontal overflow.
-- Light/Dark Mode continue to use the same component tree and semantic design tokens.
+The root route `/` currently redirects the temporary authenticated fixture to `/dashboard`. Real authentication/session routing begins in WP-F05.
 
 ## Stack baseline
 
@@ -54,6 +101,9 @@ The root route `/` currently redirects the temporary authenticated fixture to `/
 - React 19
 - TypeScript strict
 - pnpm 11.17.0
+- PostgreSQL 17
+- Drizzle ORM 0.45.2
+- Drizzle Kit 0.31.10
 - Tailwind CSS
 - Zod
 - Vitest + Testing Library
@@ -108,24 +158,22 @@ Because Playwright does not reuse the normal development server, `pnpm dev` can 
 
 ## Quality
 
-With a normal pnpm shim:
+Application quality:
 
 ```bash
 pnpm quality
-pnpm exec playwright install chromium
 pnpm e2e
 ```
 
-Without a pnpm shim on Windows:
+F04 database contract verification against a disposable database:
 
-```powershell
-corepack pnpm quality
-corepack pnpm exec playwright install chromium
-corepack pnpm e2e
+```bash
+pnpm db:reset:test
+pnpm db:migrate
+pnpm db:seed
+pnpm test:db
 ```
 
-`quality` intentionally does not shell out to nested `pnpm` commands, so it works through both direct pnpm and `corepack pnpm` invocation.
+The F04 CI gate is read-only, uses a frozen lockfile and PostgreSQL service, validates the migration journal, proves a clean zero-database migration/seed/contract cycle, runs Prettier/ESLint/Next route type generation/TypeScript/Vitest/production build, and retains the full Playwright regression suite.
 
-The F03 CI gate is read-only, uses a frozen lockfile, runs Prettier, ESLint, Next route type generation, TypeScript, Vitest, production build, and the full Playwright acceptance suite.
-
-See `CONTRIBUTING.md`, `src/components/ui/README.md`, and `docs/engineering/` for engineering conventions and phase verification records.
+See `CONTRIBUTING.md`, `src/components/ui/README.md`, `docs/engineering/WP-F03_IMPLEMENTATION_NOTES.md`, and `docs/engineering/WP-F04_IMPLEMENTATION_NOTES.md` for engineering conventions and phase verification records.
