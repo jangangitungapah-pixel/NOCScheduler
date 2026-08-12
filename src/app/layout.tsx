@@ -16,11 +16,26 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
+
+const themeBootScript = `(() => {
+  try {
+    const theme = localStorage.getItem("nocscheduler.theme") === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  } catch {
+    document.documentElement.dataset.theme = "light";
+    document.documentElement.style.colorScheme = "light";
+  }
+})();`;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html data-theme="light" lang="id">
+    <html data-theme="light" lang="id" suppressHydrationWarning>
+      <head>
+        <script>{themeBootScript}</script>
+      </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
