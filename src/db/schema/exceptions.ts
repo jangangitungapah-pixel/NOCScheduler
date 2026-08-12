@@ -92,7 +92,10 @@ export const replacementAssignments = pgTable(
     rowVersion: integer("row_version").notNull().default(1),
   },
   (table) => [
-    uniqueIndex("replacement_assignments_original_active_uq").on(table.originalAssignmentId, table.id),
+    uniqueIndex("replacement_assignments_original_active_uq").on(
+      table.originalAssignmentId,
+      table.id,
+    ),
     index("replacement_assignments_replacement_employee_idx").on(table.replacementEmployeeId),
     check(
       "replacement_assignments_interval_valid",

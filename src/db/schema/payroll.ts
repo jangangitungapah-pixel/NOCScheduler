@@ -42,7 +42,10 @@ export const payrollPeriods = pgTable(
   (table) => [
     uniqueIndex("payroll_periods_period_code_uq").on(table.periodCode),
     check("payroll_periods_date_range_valid", sql`${table.endDate} >= ${table.startDate}`),
-    check("payroll_periods_calculation_revision_nonnegative", sql`${table.calculationRevision} >= 0`),
+    check(
+      "payroll_periods_calculation_revision_nonnegative",
+      sql`${table.calculationRevision} >= 0`,
+    ),
     check("payroll_periods_is_dirty_boolean", sql`${table.isDirty} in (0, 1)`),
     check("payroll_periods_row_version_positive", sql`${table.rowVersion} > 0`),
   ],
@@ -61,7 +64,9 @@ export const payrollRecords = pgTable(
     status: payrollStatusEnum("status").notNull().default("OPEN"),
     currentRevisionId: uuid("current_revision_id"),
     isDirty: integer("is_dirty").notNull().default(0),
-    calculatedTakeHomePay: bigint("calculated_take_home_pay", { mode: "number" }).notNull().default(0),
+    calculatedTakeHomePay: bigint("calculated_take_home_pay", { mode: "number" })
+      .notNull()
+      .default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     rowVersion: integer("row_version").notNull().default(1),
@@ -86,7 +91,9 @@ export const payrollRevisions = pgTable(
     sourceFingerprint: text("source_fingerprint"),
     baseSalarySnapshot: bigint("base_salary_snapshot", { mode: "number" }).notNull(),
     grossEarnings: bigint("gross_earnings", { mode: "number" }).notNull(),
-    totalPositiveAdjustment: bigint("total_positive_adjustment", { mode: "number" }).notNull().default(0),
+    totalPositiveAdjustment: bigint("total_positive_adjustment", { mode: "number" })
+      .notNull()
+      .default(0),
     totalDeduction: bigint("total_deduction", { mode: "number" }).notNull().default(0),
     calculatedTakeHomePay: bigint("calculated_take_home_pay", { mode: "number" }).notNull(),
     calculatedBy: uuid("calculated_by").references(() => users.id, { onDelete: "set null" }),
@@ -97,11 +104,17 @@ export const payrollRevisions = pgTable(
     lockedAt: timestamp("locked_at", { withTimezone: true }),
   },
   (table) => [
-    uniqueIndex("payroll_revisions_record_revision_uq").on(table.payrollRecordId, table.revisionNumber),
+    uniqueIndex("payroll_revisions_record_revision_uq").on(
+      table.payrollRecordId,
+      table.revisionNumber,
+    ),
     check("payroll_revisions_revision_positive", sql`${table.revisionNumber} > 0`),
     check("payroll_revisions_base_salary_nonnegative", sql`${table.baseSalarySnapshot} >= 0`),
     check("payroll_revisions_gross_nonnegative", sql`${table.grossEarnings} >= 0`),
-    check("payroll_revisions_positive_adjustment_nonnegative", sql`${table.totalPositiveAdjustment} >= 0`),
+    check(
+      "payroll_revisions_positive_adjustment_nonnegative",
+      sql`${table.totalPositiveAdjustment} >= 0`,
+    ),
     check("payroll_revisions_deduction_nonnegative", sql`${table.totalDeduction} >= 0`),
     check("payroll_revisions_thp_nonnegative", sql`${table.calculatedTakeHomePay} >= 0`),
   ],

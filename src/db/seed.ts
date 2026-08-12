@@ -50,23 +50,74 @@ async function seed() {
   const { db, pool } = createDatabase(databaseUrl);
 
   try {
-    await db.insert(teams).values({ id: ids.team, code: "NOC", name: "Network Operations Center" }).onConflictDoNothing();
+    await db
+      .insert(teams)
+      .values({ id: ids.team, code: "NOC", name: "Network Operations Center" })
+      .onConflictDoNothing();
 
     await db
       .insert(users)
       .values([
-        { id: ids.adminUser, name: "NOC Administrator", email: "admin@nocscheduler.local", emailNormalized: "admin@nocscheduler.local", emailVerified: true, status: "ACTIVE" },
-        { id: ids.schedulerUser, name: "NOC Scheduler", email: "scheduler@nocscheduler.local", emailNormalized: "scheduler@nocscheduler.local", emailVerified: true, status: "ACTIVE" },
-        { id: ids.memberUser, name: "NOC Member", email: "member@nocscheduler.local", emailNormalized: "member@nocscheduler.local", emailVerified: true, status: "ACTIVE" },
+        {
+          id: ids.adminUser,
+          name: "NOC Administrator",
+          email: "admin@nocscheduler.local",
+          emailNormalized: "admin@nocscheduler.local",
+          emailVerified: true,
+          status: "ACTIVE",
+        },
+        {
+          id: ids.schedulerUser,
+          name: "NOC Scheduler",
+          email: "scheduler@nocscheduler.local",
+          emailNormalized: "scheduler@nocscheduler.local",
+          emailVerified: true,
+          status: "ACTIVE",
+        },
+        {
+          id: ids.memberUser,
+          name: "NOC Member",
+          email: "member@nocscheduler.local",
+          emailNormalized: "member@nocscheduler.local",
+          emailVerified: true,
+          status: "ACTIVE",
+        },
       ])
       .onConflictDoNothing();
 
     await db
       .insert(employees)
       .values([
-        { id: ids.adminEmployee, userId: ids.adminUser, teamId: ids.team, employeeCode: "NOC-001", displayName: "Raka Pratama", status: "ACTIVE", joinDate: "2024-01-01", jobTitle: "NOC Lead" },
-        { id: ids.schedulerEmployee, userId: ids.schedulerUser, teamId: ids.team, employeeCode: "NOC-002", displayName: "Dimas Ardi", status: "ACTIVE", joinDate: "2024-03-01", jobTitle: "NOC Scheduler" },
-        { id: ids.memberEmployee, userId: ids.memberUser, teamId: ids.team, employeeCode: "NOC-003", displayName: "Alya Putri", status: "ACTIVE", joinDate: "2025-02-01", jobTitle: "NOC Engineer" },
+        {
+          id: ids.adminEmployee,
+          userId: ids.adminUser,
+          teamId: ids.team,
+          employeeCode: "NOC-001",
+          displayName: "Raka Pratama",
+          status: "ACTIVE",
+          joinDate: "2024-01-01",
+          jobTitle: "NOC Lead",
+        },
+        {
+          id: ids.schedulerEmployee,
+          userId: ids.schedulerUser,
+          teamId: ids.team,
+          employeeCode: "NOC-002",
+          displayName: "Dimas Ardi",
+          status: "ACTIVE",
+          joinDate: "2024-03-01",
+          jobTitle: "NOC Scheduler",
+        },
+        {
+          id: ids.memberEmployee,
+          userId: ids.memberUser,
+          teamId: ids.team,
+          employeeCode: "NOC-003",
+          displayName: "Alya Putri",
+          status: "ACTIVE",
+          joinDate: "2025-02-01",
+          jobTitle: "NOC Engineer",
+        },
       ])
       .onConflictDoNothing();
 
@@ -74,7 +125,12 @@ async function seed() {
       .insert(roles)
       .values([
         { id: ids.adminRole, code: "ADMINISTRATOR", name: "Administrator", isSystemRole: true },
-        { id: ids.schedulerRole, code: "SCHEDULER", name: "Scheduler / Supervisor", isSystemRole: true },
+        {
+          id: ids.schedulerRole,
+          code: "SCHEDULER",
+          name: "Scheduler / Supervisor",
+          isSystemRole: true,
+        },
         { id: ids.memberRole, code: "NOC_MEMBER", name: "NOC Member", isSystemRole: true },
       ])
       .onConflictDoNothing();
@@ -92,23 +148,85 @@ async function seed() {
     await db
       .insert(rolePermissions)
       .values([
-        { roleId: ids.adminRole, permissionId: ids.scheduleRead, defaultScope: "ALL", grantedBy: ids.adminUser },
-        { roleId: ids.adminRole, permissionId: ids.scheduleManage, defaultScope: "ALL", grantedBy: ids.adminUser },
-        { roleId: ids.adminRole, permissionId: ids.payrollRead, defaultScope: "ALL", grantedBy: ids.adminUser },
-        { roleId: ids.adminRole, permissionId: ids.accessManage, defaultScope: "ALL", grantedBy: ids.adminUser },
-        { roleId: ids.schedulerRole, permissionId: ids.scheduleRead, defaultScope: "TEAM", grantedBy: ids.adminUser },
-        { roleId: ids.schedulerRole, permissionId: ids.scheduleManage, defaultScope: "TEAM", grantedBy: ids.adminUser },
-        { roleId: ids.memberRole, permissionId: ids.scheduleRead, defaultScope: "ALL", grantedBy: ids.adminUser },
-        { roleId: ids.memberRole, permissionId: ids.payrollRead, defaultScope: "ALL", grantedBy: ids.adminUser },
+        {
+          roleId: ids.adminRole,
+          permissionId: ids.scheduleRead,
+          defaultScope: "ALL",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.adminRole,
+          permissionId: ids.scheduleManage,
+          defaultScope: "ALL",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.adminRole,
+          permissionId: ids.payrollRead,
+          defaultScope: "ALL",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.adminRole,
+          permissionId: ids.accessManage,
+          defaultScope: "ALL",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.schedulerRole,
+          permissionId: ids.scheduleRead,
+          defaultScope: "TEAM",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.schedulerRole,
+          permissionId: ids.scheduleManage,
+          defaultScope: "TEAM",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.memberRole,
+          permissionId: ids.scheduleRead,
+          defaultScope: "ALL",
+          grantedBy: ids.adminUser,
+        },
+        {
+          roleId: ids.memberRole,
+          permissionId: ids.payrollRead,
+          defaultScope: "ALL",
+          grantedBy: ids.adminUser,
+        },
       ])
       .onConflictDoNothing();
 
     await db
       .insert(userRoles)
       .values([
-        { id: "00000000-0000-4000-8000-000000000091", userId: ids.adminUser, roleId: ids.adminRole, scopeType: "ALL", effectiveFrom: "2026-01-01", grantedBy: ids.adminUser },
-        { id: "00000000-0000-4000-8000-000000000092", userId: ids.schedulerUser, roleId: ids.schedulerRole, scopeType: "TEAM", scopeReferenceId: ids.team, effectiveFrom: "2026-01-01", grantedBy: ids.adminUser },
-        { id: "00000000-0000-4000-8000-000000000093", userId: ids.memberUser, roleId: ids.memberRole, scopeType: "SELF", effectiveFrom: "2026-01-01", grantedBy: ids.adminUser },
+        {
+          id: "00000000-0000-4000-8000-000000000091",
+          userId: ids.adminUser,
+          roleId: ids.adminRole,
+          scopeType: "ALL",
+          effectiveFrom: "2026-01-01",
+          grantedBy: ids.adminUser,
+        },
+        {
+          id: "00000000-0000-4000-8000-000000000092",
+          userId: ids.schedulerUser,
+          roleId: ids.schedulerRole,
+          scopeType: "TEAM",
+          scopeReferenceId: ids.team,
+          effectiveFrom: "2026-01-01",
+          grantedBy: ids.adminUser,
+        },
+        {
+          id: "00000000-0000-4000-8000-000000000093",
+          userId: ids.memberUser,
+          roleId: ids.memberRole,
+          scopeType: "SELF",
+          effectiveFrom: "2026-01-01",
+          grantedBy: ids.adminUser,
+        },
       ])
       .onConflictDoNothing();
 
@@ -124,34 +242,114 @@ async function seed() {
     await db
       .insert(shiftTypeVersions)
       .values([
-        { id: ids.s1Version, shiftTypeId: ids.s1, name: "Shift 1 / Pagi", shortName: "S1", startTime: "07:00:00", endTime: "15:00:00", crossesMidnight: false, displayOrder: 1, visualToken: "shift-1", effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
-        { id: ids.s2Version, shiftTypeId: ids.s2, name: "Shift 2 / Siang", shortName: "S2", startTime: "15:00:00", endTime: "23:00:00", crossesMidnight: false, displayOrder: 2, visualToken: "shift-2", effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
-        { id: ids.s3Version, shiftTypeId: ids.s3, name: "Shift 3 / Malam", shortName: "S3", startTime: "23:00:00", endTime: "07:00:00", crossesMidnight: true, displayOrder: 3, visualToken: "shift-3", effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
+        {
+          id: ids.s1Version,
+          shiftTypeId: ids.s1,
+          name: "Shift 1 / Pagi",
+          shortName: "S1",
+          startTime: "07:00:00",
+          endTime: "15:00:00",
+          crossesMidnight: false,
+          displayOrder: 1,
+          visualToken: "shift-1",
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
+        {
+          id: ids.s2Version,
+          shiftTypeId: ids.s2,
+          name: "Shift 2 / Siang",
+          shortName: "S2",
+          startTime: "15:00:00",
+          endTime: "23:00:00",
+          crossesMidnight: false,
+          displayOrder: 2,
+          visualToken: "shift-2",
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
+        {
+          id: ids.s3Version,
+          shiftTypeId: ids.s3,
+          name: "Shift 3 / Malam",
+          shortName: "S3",
+          startTime: "23:00:00",
+          endTime: "07:00:00",
+          crossesMidnight: true,
+          displayOrder: 3,
+          visualToken: "shift-3",
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
       ])
       .onConflictDoNothing();
 
     await db
       .insert(employeeSalaryVersions)
       .values([
-        { id: ids.adminSalary, employeeId: ids.adminEmployee, baseSalaryAmount: 8_000_000, effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
-        { id: ids.schedulerSalary, employeeId: ids.schedulerEmployee, baseSalaryAmount: 7_000_000, effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
-        { id: ids.memberSalary, employeeId: ids.memberEmployee, baseSalaryAmount: 6_000_000, effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
+        {
+          id: ids.adminSalary,
+          employeeId: ids.adminEmployee,
+          baseSalaryAmount: 8_000_000,
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
+        {
+          id: ids.schedulerSalary,
+          employeeId: ids.schedulerEmployee,
+          baseSalaryAmount: 7_000_000,
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
+        {
+          id: ids.memberSalary,
+          employeeId: ids.memberEmployee,
+          baseSalaryAmount: 6_000_000,
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
       ])
       .onConflictDoNothing();
 
     await db
       .insert(shiftIncentiveVersions)
       .values([
-        { id: ids.s1Incentive, shiftTypeId: ids.s1, amount: 0, isIncentiveEnabled: false, effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
-        { id: ids.s2Incentive, shiftTypeId: ids.s2, amount: 50_000, isIncentiveEnabled: true, effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
-        { id: ids.s3Incentive, shiftTypeId: ids.s3, amount: 75_000, isIncentiveEnabled: true, effectiveFrom: "2026-01-01", createdBy: ids.adminUser },
+        {
+          id: ids.s1Incentive,
+          shiftTypeId: ids.s1,
+          amount: 0,
+          isIncentiveEnabled: false,
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
+        {
+          id: ids.s2Incentive,
+          shiftTypeId: ids.s2,
+          amount: 50_000,
+          isIncentiveEnabled: true,
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
+        {
+          id: ids.s3Incentive,
+          shiftTypeId: ids.s3,
+          amount: 75_000,
+          isIncentiveEnabled: true,
+          effectiveFrom: "2026-01-01",
+          createdBy: ids.adminUser,
+        },
       ])
       .onConflictDoNothing();
 
     await db
       .insert(systemSettings)
       .values([
-        { key: "default_timezone", value: "Asia/Jakarta", valueType: "STRING", updatedBy: ids.adminUser },
+        {
+          key: "default_timezone",
+          value: "Asia/Jakarta",
+          valueType: "STRING",
+          updatedBy: ids.adminUser,
+        },
         { key: "default_currency", value: "IDR", valueType: "STRING", updatedBy: ids.adminUser },
       ])
       .onConflictDoNothing();

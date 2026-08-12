@@ -40,7 +40,10 @@ export const permissions = pgTable(
     riskLevel: permissionRiskEnum("risk_level").notNull().default("LOW"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [uniqueIndex("permissions_code_uq").on(table.code), index("permissions_domain_idx").on(table.domain)],
+  (table) => [
+    uniqueIndex("permissions_code_uq").on(table.code),
+    index("permissions_domain_idx").on(table.domain),
+  ],
 );
 
 export const rolePermissions = pgTable(
@@ -56,7 +59,9 @@ export const rolePermissions = pgTable(
     grantedAt: timestamp("granted_at", { withTimezone: true }).notNull().defaultNow(),
     grantedBy: uuid("granted_by").references(() => users.id, { onDelete: "set null" }),
   },
-  (table) => [primaryKey({ columns: [table.roleId, table.permissionId], name: "role_permissions_pk" })],
+  (table) => [
+    primaryKey({ columns: [table.roleId, table.permissionId], name: "role_permissions_pk" }),
+  ],
 );
 
 export const userRoles = pgTable(

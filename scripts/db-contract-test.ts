@@ -27,8 +27,12 @@ try {
   assert.equal(seedCounts.rows[0]?.employees, "3");
   assert.equal(seedCounts.rows[0]?.shifts, "3");
 
-  const member = await client.query<{ id: string }>("select id from employees where employee_code = 'NOC-003'");
-  const scheduler = await client.query<{ id: string }>("select id from employees where employee_code = 'NOC-002'");
+  const member = await client.query<{ id: string }>(
+    "select id from employees where employee_code = 'NOC-003'",
+  );
+  const scheduler = await client.query<{ id: string }>(
+    "select id from employees where employee_code = 'NOC-002'",
+  );
   const s2 = await client.query<{ id: string }>("select id from shift_types where code = 'S2'");
   const s3Version = await client.query<{ id: string; shift_type_id: string }>(`
     select stv.id, stv.shift_type_id
@@ -93,7 +97,12 @@ try {
         `insert into shift_assignments
           (schedule_version_id, employee_id, work_date, primary_state, shift_type_id, shift_type_version_id, start_at, end_at, source_type)
          values ($1, $2, '2026-08-13', 'SHIFT', $3, $4, '2026-08-13T16:00:00Z', '2026-08-14T00:00:00Z', 'MANUAL')`,
-        [draftVersionId, member.rows[0]!.id, s3Version.rows[0]!.shift_type_id, s3Version.rows[0]!.id],
+        [
+          draftVersionId,
+          member.rows[0]!.id,
+          s3Version.rows[0]!.shift_type_id,
+          s3Version.rows[0]!.id,
+        ],
       ),
     "23505",
     "duplicate primary assignment",
