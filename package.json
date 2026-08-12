@@ -9,10 +9,10 @@
     "pnpm": ">=11 <12"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "clean": "node -e \"const fs=require('node:fs'); for (const p of ['.next','coverage','playwright-report','test-results']) fs.rmSync(p,{recursive:true,force:true});\"",
+    "dev": "node scripts/run-next.mjs dev .next-dev",
+    "build": "node scripts/run-next.mjs build .next-build",
+    "start": "node scripts/run-next.mjs start .next-build",
+    "clean": "node -e \"const fs=require('node:fs'); for (const p of ['.next','.next-dev','.next-build','.next-e2e','coverage','playwright-report','test-results']) fs.rmSync(p,{recursive:true,force:true});\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
@@ -21,7 +21,7 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium",
-    "quality": "prettier --check . && eslint . --max-warnings=0 && next typegen && tsc --noEmit && vitest run && next build"
+    "quality": "prettier --check . && eslint . --max-warnings=0 && next typegen && tsc --noEmit && vitest run && node scripts/run-next.mjs build .next-build"
   },
   "dependencies": {
     "next": "16.2.12",
