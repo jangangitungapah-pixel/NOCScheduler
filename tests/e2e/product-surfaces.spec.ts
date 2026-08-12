@@ -71,15 +71,16 @@ test("manage schedule exposes desktop validation and focused mobile editing", as
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/schedule/manage");
 
+  const desktop = page.locator(".product-manage-desktop");
   await expect(page.getByText("DRAFT", { exact: true })).toBeVisible();
   await expect(page.getByText("3 selected cells")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Ready with warnings" })).toBeVisible();
-  await expect(page.getByText("Revision impact", { exact: true })).toBeVisible();
+  await expect(desktop.getByRole("heading", { name: "Ready with warnings" })).toBeVisible();
+  await expect(desktop.getByText("Revision impact", { exact: true })).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   const editor = page.getByLabel("Focused mobile schedule editor");
   await expect(editor).toBeVisible();
-  await expect(page.locator(".product-manage-desktop")).toBeHidden();
+  await expect(desktop).toBeHidden();
   await expect(editor.getByText("Step 1 · Choose work date")).toBeVisible();
   await expect(editor.getByText("Step 2 · Select employees")).toBeVisible();
   await expect(editor.getByText("Step 3 · Assign work state")).toBeVisible();
