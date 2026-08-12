@@ -31,6 +31,10 @@ function getThemeSnapshot(): Theme {
   }
 }
 
+function getServerThemeSnapshot(): Theme {
+  return "light";
+}
+
 function subscribeToTheme(listener: () => void) {
   const notify = () => listener();
   window.addEventListener("storage", notify);
@@ -57,7 +61,7 @@ function persistTheme(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
+  const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
 
   useEffect(() => {
     const root = document.documentElement;
