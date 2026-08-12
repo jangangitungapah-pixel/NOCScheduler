@@ -63,7 +63,13 @@ function Overlay({
             </p>
           ) : null}
         </div>
-        <Button aria-label="Tutup" iconOnly onClick={() => onOpenChange(false)} size="sm" variant="ghost">
+        <Button
+          aria-label="Tutup"
+          iconOnly
+          onClick={() => onOpenChange(false)}
+          size="sm"
+          variant="ghost"
+        >
           <Icon name="close" size={16} />
         </Button>
       </header>

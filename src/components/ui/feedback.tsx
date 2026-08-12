@@ -36,7 +36,11 @@ function FeedbackContent({ children, title, tone = "neutral" }: FeedbackProps) {
 
 export function Banner({ className, tone = "neutral", ...props }: FeedbackProps) {
   return (
-    <div className={cx("ui-banner", className)} data-tone={tone} role={tone === "danger" ? "alert" : "status"}>
+    <div
+      className={cx("ui-banner", className)}
+      data-tone={tone}
+      role={tone === "danger" ? "alert" : "status"}
+    >
       <FeedbackContent {...props} tone={tone} />
     </div>
   );
@@ -44,7 +48,11 @@ export function Banner({ className, tone = "neutral", ...props }: FeedbackProps)
 
 export function Toast({ className, tone = "neutral", ...props }: FeedbackProps) {
   return (
-    <div className={cx("ui-toast", className)} data-tone={tone} role={tone === "danger" ? "alert" : "status"}>
+    <div
+      className={cx("ui-toast", className)}
+      data-tone={tone}
+      role={tone === "danger" ? "alert" : "status"}
+    >
       <FeedbackContent {...props} tone={tone} />
     </div>
   );
@@ -52,7 +60,11 @@ export function Toast({ className, tone = "neutral", ...props }: FeedbackProps) 
 
 export function InlineValidation({ className, tone = "danger", ...props }: FeedbackProps) {
   return (
-    <div className={cx("ui-inline-feedback", className)} data-tone={tone} role={tone === "danger" ? "alert" : "status"}>
+    <div
+      className={cx("ui-inline-feedback", className)}
+      data-tone={tone}
+      role={tone === "danger" ? "alert" : "status"}
+    >
       <FeedbackContent {...props} tone={tone} />
     </div>
   );
@@ -64,7 +76,9 @@ type SkeletonProps = {
 };
 
 export function Skeleton({ className, variant = "line" }: SkeletonProps) {
-  return <span aria-hidden="true" className={cx("ui-skeleton", className)} data-variant={variant} />;
+  return (
+    <span aria-hidden="true" className={cx("ui-skeleton", className)} data-variant={variant} />
+  );
 }
 
 type StateProps = {
@@ -76,7 +90,14 @@ type StateProps = {
   className?: string;
 };
 
-function StatePrimitive({ actionLabel, className, description, icon = "info", onAction, title }: StateProps) {
+function StatePrimitive({
+  actionLabel,
+  className,
+  description,
+  icon = "info",
+  onAction,
+  title,
+}: StateProps) {
   return (
     <div className={cx("ui-state", className)}>
       <div className="ui-state__icon">

@@ -63,7 +63,11 @@ export function ScheduleCell({
   validationLabel,
 }: ScheduleCellProps) {
   return (
-    <div className={cx("ui-schedule-cell", className)} data-selected={selected || undefined} data-state={state}>
+    <div
+      className={cx("ui-schedule-cell", className)}
+      data-selected={selected || undefined}
+      data-state={state}
+    >
       <div className="ui-schedule-cell__top">
         {assignment === "UNASSIGNED" ? (
           <span className="ui-schedule-cell__unassigned">Belum diisi</span>

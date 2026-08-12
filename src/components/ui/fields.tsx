@@ -37,14 +37,19 @@ function FieldShell({ children, error, helperText, id, label, required }: FieldS
           {label}
           {required ? (
             <span aria-hidden="true" className="ui-field__required">
-              {" "}*
+              {" "}
+              *
             </span>
           ) : null}
         </label>
       </div>
       {children}
       {message ? (
-        <p className="ui-field__helper" data-tone={error ? "error" : undefined} id={`${id}-message`}>
+        <p
+          className="ui-field__helper"
+          data-tone={error ? "error" : undefined}
+          id={`${id}-message`}
+        >
           {message}
         </p>
       ) : null}
@@ -52,10 +57,11 @@ function FieldShell({ children, error, helperText, id, label, required }: FieldS
   );
 }
 
-type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & FieldMeta & {
-  id?: string;
-  leading?: ReactNode;
-};
+type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> &
+  FieldMeta & {
+    id?: string;
+    leading?: ReactNode;
+  };
 
 export function Input({
   error,
@@ -91,11 +97,19 @@ export function SearchInput(props: Omit<InputProps, "leading" | "type">) {
   return <Input {...props} leading={<Icon name="search" size={16} />} type="search" />;
 }
 
-type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id"> & FieldMeta & {
-  id?: string;
-};
+type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id"> &
+  FieldMeta & {
+    id?: string;
+  };
 
-export function Textarea({ error, helperText, id: idProp, label, required, ...props }: TextareaProps) {
+export function Textarea({
+  error,
+  helperText,
+  id: idProp,
+  label,
+  required,
+  ...props
+}: TextareaProps) {
   const generatedId = useId();
   const id = idProp ?? generatedId;
 
@@ -113,12 +127,21 @@ export function Textarea({ error, helperText, id: idProp, label, required, ...pr
   );
 }
 
-type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "id"> & FieldMeta & {
-  id?: string;
-  children: ReactNode;
-};
+type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "id"> &
+  FieldMeta & {
+    id?: string;
+    children: ReactNode;
+  };
 
-export function Select({ children, error, helperText, id: idProp, label, required, ...props }: SelectProps) {
+export function Select({
+  children,
+  error,
+  helperText,
+  id: idProp,
+  label,
+  required,
+  ...props
+}: SelectProps) {
   const generatedId = useId();
   const id = idProp ?? generatedId;
 
@@ -204,7 +227,9 @@ export function Combobox({
     <FieldShell error={error} helperText={helperText} id={id} label={label} required={required}>
       <div className="ui-combobox">
         <input
-          aria-activedescendant={open && activeOption ? `${id}-option-${activeOption.value}` : undefined}
+          aria-activedescendant={
+            open && activeOption ? `${id}-option-${activeOption.value}` : undefined
+          }
           aria-autocomplete="list"
           aria-controls={listboxId}
           aria-describedby={error || helperText ? `${id}-message` : undefined}
@@ -225,7 +250,9 @@ export function Combobox({
             if (event.key === "ArrowDown") {
               event.preventDefault();
               setOpen(true);
-              setHighlightedIndex((index) => Math.min(index + 1, Math.max(filteredOptions.length - 1, 0)));
+              setHighlightedIndex((index) =>
+                Math.min(index + 1, Math.max(filteredOptions.length - 1, 0)),
+              );
             } else if (event.key === "ArrowUp") {
               event.preventDefault();
               setOpen(true);

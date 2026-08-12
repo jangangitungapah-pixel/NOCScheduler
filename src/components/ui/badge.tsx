@@ -10,7 +10,13 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
   children: ReactNode;
 };
 
-export function Badge({ children, className, showDot = false, tone = "neutral", ...props }: BadgeProps) {
+export function Badge({
+  children,
+  className,
+  showDot = false,
+  tone = "neutral",
+  ...props
+}: BadgeProps) {
   return (
     <span className={cx("ui-badge", className)} data-tone={tone} {...props}>
       {showDot ? <span aria-hidden="true" className="ui-badge__dot" /> : null}

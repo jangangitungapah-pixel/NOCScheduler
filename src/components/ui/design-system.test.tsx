@@ -17,7 +17,11 @@ afterEach(() => {
 
 describe("design system behavior", () => {
   it("keeps loading button width content in the DOM while disabling interaction", () => {
-    render(<Button loading variant="primary">Publikasikan</Button>);
+    render(
+      <Button loading variant="primary">
+        Publikasikan
+      </Button>,
+    );
     const button = screen.getByRole("button", { name: "Publikasikan" });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute("aria-busy", "true");
