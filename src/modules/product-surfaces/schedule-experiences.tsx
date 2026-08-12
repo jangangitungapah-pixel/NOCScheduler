@@ -58,7 +58,7 @@ function shiftKind(shift: ShiftCode): ShiftKind {
 }
 
 function shiftTime(item: ScheduleCellFixture) {
-  if (!item.start) return item.shift === "OFF" ? "Rest day" : item.note ?? "No shift time";
+  if (!item.start) return item.shift === "OFF" ? "Rest day" : (item.note ?? "No shift time");
   return `${item.start}–${item.end}${item.shift === "S3" ? " (+1 hari)" : ""}`;
 }
 
@@ -119,7 +119,7 @@ function ScheduleMonth() {
   return (
     <Surface className="product-month-calendar" padding="none">
       <div className="product-month-calendar__weekdays" aria-hidden="true">
-        {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day) => (
+        {["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map((day) => (
           <span key={day}>{day}</span>
         ))}
       </div>
@@ -127,11 +127,7 @@ function ScheduleMonth() {
         {days.map((day) => {
           const item = assignmentByDay.get(day);
           return (
-            <div
-              className={day === 13 ? "is-today" : undefined}
-              data-shift={item?.shift}
-              key={day}
-            >
+            <div className={day === 13 ? "is-today" : undefined} data-shift={item?.shift} key={day}>
               <strong>{day}</strong>
               {item ? (
                 <>
@@ -159,7 +155,10 @@ export function MyScheduleExperience({ meta }: { meta: RouteMeta }) {
           <a className="product-action" href="#today">
             Jump to today
           </a>
-          <Link className="product-action product-action--primary" href="/schedule/requests?create=1">
+          <Link
+            className="product-action product-action--primary"
+            href="/schedule/requests?create=1"
+          >
             Request change
           </Link>
         </>
@@ -324,7 +323,11 @@ export function TeamScheduleExperience({ meta }: { meta: RouteMeta }) {
       </div>
 
       <Surface className="product-schedule-matrix-wrap product-team-desktop-matrix" padding="none">
-        <div className="product-schedule-matrix" role="table" aria-label="Team schedule fixture matrix">
+        <div
+          className="product-schedule-matrix"
+          role="table"
+          aria-label="Team schedule fixture matrix"
+        >
           <div className="product-schedule-row product-schedule-row--head" role="row">
             <div role="columnheader">Employee</div>
             {teamSchedule[0]?.cells.map((cell) => (
@@ -411,7 +414,13 @@ export function TeamScheduleExperience({ meta }: { meta: RouteMeta }) {
   );
 }
 
-export function ManageScheduleExperience({ meta, period = "2026-08" }: { meta: RouteMeta; period?: string }) {
+export function ManageScheduleExperience({
+  meta,
+  period = "2026-08",
+}: {
+  meta: RouteMeta;
+  period?: string;
+}) {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([
     "emp-001",
     "emp-002",
@@ -593,7 +602,13 @@ function requestTypeLabel(type: RequestFixture["type"]) {
   return type === "OVERTIME" ? "Overtime" : type.charAt(0) + type.slice(1).toLowerCase();
 }
 
-export function RequestsExperience({ meta, initialCreate = false }: { meta: RouteMeta; initialCreate?: boolean }) {
+export function RequestsExperience({
+  meta,
+  initialCreate = false,
+}: {
+  meta: RouteMeta;
+  initialCreate?: boolean;
+}) {
   const [createMode, setCreateMode] = useState(initialCreate);
   const [type, setType] = useState<RequestFixture["type"]>("LEAVE");
   const [date, setDate] = useState("2026-08-18");
@@ -674,7 +689,10 @@ export function RequestsExperience({ meta, initialCreate = false }: { meta: Rout
             </div>
             <div className="product-note">
               <strong>Payroll awareness</strong>
-              <p>Approval determines effective work state. Payroll impact remains explicit and is never inferred silently.</p>
+              <p>
+                Approval determines effective work state. Payroll impact remains explicit and is
+                never inferred silently.
+              </p>
             </div>
             <div className="product-button-row">
               <button className="product-action" onClick={() => setCreateMode(false)} type="button">
@@ -694,7 +712,9 @@ export function RequestsExperience({ meta, initialCreate = false }: { meta: Rout
         <section className="product-list-detail">
           <div>
             <div className="product-filter-row">
-              <button className="is-active" type="button">All</button>
+              <button className="is-active" type="button">
+                All
+              </button>
               <button type="button">Pending</button>
               <button type="button">Approved</button>
               <button type="button">Mine</button>
@@ -712,7 +732,15 @@ export function RequestsExperience({ meta, initialCreate = false }: { meta: Rout
                     <span>{request.dateLabel}</span>
                   </div>
                   <p>{request.summary}</p>
-                  <Badge tone={request.status === "PENDING" ? "warning" : request.status === "APPROVED" ? "success" : "danger"}>
+                  <Badge
+                    tone={
+                      request.status === "PENDING"
+                        ? "warning"
+                        : request.status === "APPROVED"
+                          ? "success"
+                          : "danger"
+                    }
+                  >
                     {request.status}
                   </Badge>
                 </Link>
@@ -723,7 +751,9 @@ export function RequestsExperience({ meta, initialCreate = false }: { meta: Rout
             <Surface padding="lg">
               <span className="product-eyebrow">{selectedRequest.id}</span>
               <h2>Pending request context</h2>
-              <p className="product-muted">Select a request to review source state, approval history, and operational impact.</p>
+              <p className="product-muted">
+                Select a request to review source state, approval history, and operational impact.
+              </p>
               <Link className="product-text-link" href={`/schedule/requests/${selectedRequest.id}`}>
                 Open full request detail →
               </Link>
