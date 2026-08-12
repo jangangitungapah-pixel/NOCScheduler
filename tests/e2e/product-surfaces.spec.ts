@@ -41,9 +41,7 @@ test("manage schedule exposes draft, bulk selection, validation, and publish rev
 
 test("payroll and employee detail preserve fixture drill-down routes", async ({ page }) => {
   await page.goto("/payroll/2026-08");
-  await expect(
-    page.getByRole("heading", { name: "Monthly Payroll", exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Monthly Payroll", exact: true })).toBeVisible();
   await expect(page.getByText("Total calculated THP")).toBeVisible();
 
   await page.getByRole("link", { name: "Raka Pratama" }).click();
