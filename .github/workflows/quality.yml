@@ -44,7 +44,7 @@ jobs:
       - name: Canonical format
         run: >-
           pnpm exec prettier --write
-          package.json firebase.json firestore.indexes.json apphosting.yaml
+          package.json pnpm-workspace.yaml firebase.json firestore.indexes.json apphosting.yaml
           vitest.firebase.config.ts src/firebase scripts/firebase-contract-test.ts tests/firebase
           README.md docs/prd docs/engineering/WP-F04_IMPLEMENTATION_NOTES.md
           docs/engineering/WP-F04R_FIREBASE_REBASELINE_NOTES.md
