@@ -128,7 +128,9 @@ test("payroll and employee detail preserve fixture drill-down routes", async ({ 
   await expect(page.getByText("Published schedule correction")).toBeVisible();
 });
 
-test("canonical F03 routes render product surfaces instead of shell placeholders", async ({ page }) => {
+test("canonical F03 routes render product surfaces instead of shell placeholders", async ({
+  page,
+}) => {
   const routes = [
     "/dashboard",
     "/schedule/me",
