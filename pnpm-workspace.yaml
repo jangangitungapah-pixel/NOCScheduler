@@ -1,6 +1,11 @@
 packages:
   - .
 
+# Project-level pnpm 11 settings live in pnpm-workspace.yaml.
+engineStrict: true
+saveExact: true
+strictPeerDependencies: true
+
 # pnpm 11 blocks dependency lifecycle scripts unless explicitly reviewed.
 # Keep approvals version-scoped so dependency upgrades require a new review.
 allowBuilds:

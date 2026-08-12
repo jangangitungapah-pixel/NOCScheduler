@@ -5,10 +5,8 @@ on:
     branches: [main]
   pull_request:
 
-# Temporary write permission is used only while WP-F00 bootstraps the first
-# reviewed lockfile and exact Prettier output. It is removed immediately after.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -30,19 +28,10 @@ jobs:
           version: 11.17.0
           runtime: node@24.18.0
           install: false
-          cache: ${{ hashFiles('pnpm-lock.yaml') != '' }}
+          cache: true
 
       - name: Install dependencies
-        shell: bash
-        run: |
-          if [[ -f pnpm-lock.yaml ]]; then
-            pnpm install --frozen-lockfile
-          else
-            pnpm install --no-frozen-lockfile
-          fi
-
-      - name: Apply canonical formatting during F00 bootstrap
-        run: pnpm format
+        run: pnpm install --frozen-lockfile
 
       - name: Static and application quality gates
         run: pnpm quality
@@ -52,19 +41,3 @@ jobs:
 
       - name: Playwright smoke
         run: pnpm e2e:smoke
-
-      - name: Commit reviewed F00 bootstrap outputs
-        if: ${{ success() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml src/app/globals.css src/app/page.tsx
-
-          if git diff --cached --quiet; then
-            echo "No bootstrap outputs need committing."
-            exit 0
-          fi
-
-          git commit -m "chore: commit F00 generated baseline"
-          git push origin HEAD:main
