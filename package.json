@@ -19,12 +19,22 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:db": "tsx scripts/db-contract-test.ts",
     "e2e": "playwright test",
     "e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium",
+    "db:generate": "drizzle-kit generate",
+    "db:generate:custom": "drizzle-kit generate --custom",
+    "db:check": "drizzle-kit check",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:reset:test": "tsx scripts/reset-test-db.ts",
+    "db:studio": "drizzle-kit studio",
     "quality": "prettier --check . && eslint . --max-warnings=0 && next typegen && tsc --noEmit && vitest run && node scripts/run-next.mjs build .next-build"
   },
   "dependencies": {
+    "drizzle-orm": "0.45.2",
     "next": "16.2.12",
+    "pg": "8.22.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "4.4.3"
@@ -37,8 +47,10 @@
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.0.0",
+    "@types/pg": "8.20.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "drizzle-kit": "0.31.10",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
     "eslint-config-prettier": "^10.1.8",
@@ -46,6 +58,7 @@
     "postcss": "^8.5.0",
     "prettier": "3.9.6",
     "tailwindcss": "4.3.3",
+    "tsx": "4.23.1",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
   }
