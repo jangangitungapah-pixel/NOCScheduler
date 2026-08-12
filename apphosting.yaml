@@ -1,0 +1,8 @@
+# Firebase App Hosting runtime defaults for the small internal NOCScheduler workload.
+# Production Firebase project/environment values are configured in the App Hosting backend.
+runConfig:
+  minInstances: 0
+  maxInstances: 3
+  concurrency: 40
+  cpu: 1
+  memoryMiB: 512

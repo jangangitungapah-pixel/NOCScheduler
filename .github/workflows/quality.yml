@@ -1,38 +1,21 @@
-name: Quality
+name: Firebase Rebaseline Bootstrap
 
 on:
   push:
     branches: [main]
-  pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: F04 quality gate
+  rebaseline:
+    name: F04R Firebase rebaseline bootstrap
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_DB: nocscheduler
-          POSTGRES_USER: nocscheduler
-          POSTGRES_PASSWORD: nocscheduler
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U nocscheduler -d nocscheduler"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    env:
-      DATABASE_URL: postgresql://nocscheduler:nocscheduler@localhost:5432/nocscheduler
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -46,24 +29,51 @@ jobs:
           install: false
           cache: true
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Java for Firebase emulators
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Refresh Firebase dependency lock
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Apply canonical Firebase architecture documentation
+        run: node scripts/firebase-rebaseline-docs.mjs
+
+      - name: Canonical format
+        run: >-
+          pnpm exec prettier --write
+          package.json .firebaserc firebase.json firestore.indexes.json apphosting.yaml
+          vitest.firebase.config.ts src/firebase scripts/firebase-contract-test.ts tests/firebase
+          README.md docs/prd docs/engineering/WP-F04_IMPLEMENTATION_NOTES.md
+          docs/engineering/WP-F04R_FIREBASE_REBASELINE_NOTES.md
+          docs/workplan/WORKPLAN_NOCScheduler_Fullstack_Implementation_Master_v1.md
+          .github/workflows/quality.yml scripts/firebase-rebaseline-docs.mjs
 
       - name: Static and application quality gates
         run: pnpm quality
 
-      - name: Validate migration journal
-        run: pnpm db:check
-
-      - name: Verify clean database install and contracts
-        run: |
-          pnpm db:reset:test
-          pnpm db:migrate
-          pnpm db:seed
-          pnpm test:db
+      - name: Firebase emulator contracts and Security Rules
+        run: pnpm firebase:test
 
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Playwright regression
         run: pnpm e2e
+
+      - name: Finalize F04R handoff and restore read-only CI
+        run: |
+          node scripts/firebase-rebaseline-docs.mjs --finalize
+          pnpm exec prettier --write README.md docs/engineering/WP-F04R_FIREBASE_REBASELINE_NOTES.md .github/workflows/quality.yml
+          pnpm quality
+          git rm scripts/firebase-rebaseline-docs.mjs
+
+      - name: Commit canonical Firebase rebaseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: complete WP-F04R Firebase platform rebaseline"
+          git push

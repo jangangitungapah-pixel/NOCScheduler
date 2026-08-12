@@ -1,0 +1,12 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // F04R starts fail-closed. Application data is server-authoritative and
+    // accessed through Firebase Admin SDK / Next.js server code. F05 will add
+    // authenticated capability-aware client reads only where explicitly needed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -8,15 +8,15 @@ describe("validateEnv", () => {
 
     expect(env.NODE_ENV).toBe("test");
     expect(env.NEXT_PUBLIC_APP_NAME).toBe("NOCScheduler");
-    expect(env.DATABASE_URL).toBeUndefined();
+    expect(env.FIREBASE_PROJECT_ID).toBeUndefined();
   });
 
-  it("rejects a malformed database URL when one is supplied", () => {
-    expect(() =>
-      validateEnv({
-        NODE_ENV: "test",
-        DATABASE_URL: "not-a-database-url",
-      }),
-    ).toThrow();
+  it("accepts an explicit Firebase project ID", () => {
+    const env = validateEnv({
+      NODE_ENV: "test",
+      FIREBASE_PROJECT_ID: "demo-nocscheduler",
+    });
+
+    expect(env.FIREBASE_PROJECT_ID).toBe("demo-nocscheduler");
   });
 });

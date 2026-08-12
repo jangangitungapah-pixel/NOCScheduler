@@ -10,90 +10,35 @@ The repository is implemented from the canonical product specifications in `docs
 - **WP-F01 — Frontend Foundation & Design System: ACCEPTED**
 - **WP-F02 — Application Shell, Navigation & Responsive Frame: ACCEPTED**
 - **WP-F03 — High-Fidelity Frontend Product Surfaces: ACCEPTED**
-- **WP-F04 — Database & Domain Foundation: COMPLETE — awaiting user acceptance**
+- **WP-F04 — PostgreSQL/Drizzle Database Foundation: SUPERSEDED by Firebase rebaseline**
+- **WP-F04R — Firebase Platform & Domain Foundation: IN PROGRESS**
 - WP-F05 has not started.
 
-WP-F04 establishes the PostgreSQL/Drizzle historical data foundation. The high-fidelity WP-F03 product surfaces still use frontend fixtures until later full-stack phases intentionally replace them with server-authoritative APIs.
+The architecture pivot is canonicalized by `docs/prd/PRD-21_Firebase_Platform_Architecture_Amendment.md`. Product behavior and historical correctness requirements remain intact; only the infrastructure/persistence/authentication platform is being rebaselined before WP-F05.
 
-## F04 database foundation
+## Firebase target architecture
 
-F04 adds:
+```text
+Browser
+  → Next.js
+  → Firebase App Hosting managed runtime
+  → Next.js server/API/domain services
+  → Firebase Admin SDK
+  → Cloud Firestore
 
-- PostgreSQL 17 local/test service through `compose.yaml`,
-- Drizzle ORM schema modules and Drizzle Kit migration workflow,
-- committed zero-database migrations under `drizzle/`,
-- identity + employee + team entities,
-- role/permission/effective user-role entities,
-- stable shift identities + effective-dated shift versions,
-- schedule period/version/assignment history,
-- canonical schedule request parent + exception/swap/replacement/overtime records,
-- effective-dated salary and shift incentive versions,
-- payroll period/record/revision/item/source/adjustment history,
-- holidays, settings, notifications, and append-oriented audit events,
-- row-version fields and critical indexes/unique constraints,
-- PostgreSQL historical/effective-range guards,
-- central `Asia/Jakarta` business-date utilities,
-- integer-IDR money utilities,
-- deterministic seed data,
-- executable PostgreSQL contract tests.
+Browser authentication
+  → Firebase Authentication
 
-The database model intentionally treats historical correctness as part of application correctness. Published schedule history, effective-dated compensation, payroll revisions, and audit evidence are not modeled as disposable current-state rows.
-
-## Local PostgreSQL setup
-
-Start PostgreSQL:
-
-```bash
-docker compose up -d postgres
+Local development / CI
+  → Firebase Local Emulator Suite
+     ├─ Authentication emulator :9099
+     ├─ Cloud Firestore emulator :8080
+     └─ Emulator UI :4000
 ```
 
-Create local environment configuration and install dependencies:
+NOCScheduler no longer requires a self-managed application server, PostgreSQL, Drizzle, or Docker as a development prerequisite.
 
-```bash
-cp .env.example .env.local
-pnpm install --frozen-lockfile
-```
-
-Apply the committed migrations and deterministic seed:
-
-```bash
-pnpm db:migrate
-pnpm db:seed
-```
-
-Useful database commands:
-
-```bash
-pnpm db:check
-pnpm db:studio
-pnpm test:db
-```
-
-`pnpm db:reset:test` is destructive and exists for disposable local/test databases only. It drops and recreates the public schema before migration/seed verification.
-
-## F03 review routes
-
-With `pnpm dev` running on port 3000, the accepted high-fidelity fixture surfaces remain available on:
-
-- Dashboard: `http://localhost:3000/dashboard`
-- My Schedule: `http://localhost:3000/schedule/me`
-- Team Schedule: `http://localhost:3000/schedule/team`
-- Manage Schedule: `http://localhost:3000/schedule/manage`
-- Requests: `http://localhost:3000/schedule/requests`
-- Request create flow: `http://localhost:3000/schedule/requests?create=1`
-- Employees: `http://localhost:3000/employees`
-- Employee history: `http://localhost:3000/employees/emp-001/history`
-- Payroll Overview: `http://localhost:3000/payroll`
-- Monthly Payroll: `http://localhost:3000/payroll/2026-08`
-- Reports: `http://localhost:3000/reports`
-- Activity History: `http://localhost:3000/activity`
-- Settings / Shifts: `http://localhost:3000/settings/shifts`
-- Notifications: `http://localhost:3000/notifications`
-- Profile fixture: `http://localhost:3000/profile`
-- login boundary outside the shell: `http://localhost:3000/login`
-- F01 design-system reference: `http://localhost:3000/design-system`
-
-The root route `/` currently redirects the temporary authenticated fixture to `/dashboard`. Real authentication/session routing begins in WP-F05.
+Critical schedule/payroll/access mutations remain server-authoritative. F04R Firestore Security Rules start fail-closed, while privileged server code uses Firebase Admin SDK and explicit domain authorization/invariants. F05 will introduce Firebase Authentication and capability-aware access.
 
 ## Stack baseline
 
@@ -101,9 +46,11 @@ The root route `/` currently redirects the temporary authenticated fixture to `/
 - React 19
 - TypeScript strict
 - pnpm 11.17.0
-- PostgreSQL 17
-- Drizzle ORM 0.45.2
-- Drizzle Kit 0.31.10
+- Firebase App Hosting
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Admin SDK
+- Firebase Local Emulator Suite
 - Tailwind CSS
 - Zod
 - Vitest + Testing Library
@@ -125,9 +72,7 @@ pnpm dev
 
 ### Windows PowerShell without Administrator rights
 
-Some Windows Node installations live under `C:\Program Files\nodejs`. In that setup, `corepack enable` can fail with `EPERM` because Corepack cannot create the `pnpm` shim next to the Node executable.
-
-You do not need to weaken Windows permissions or run the project as Administrator. Corepack can invoke the pinned package manager directly:
+If `corepack enable` cannot create a pnpm shim under `C:\Program Files\nodejs`, invoke the pinned package manager through Corepack directly:
 
 ```powershell
 corepack install
@@ -137,16 +82,49 @@ corepack pnpm install --frozen-lockfile
 corepack pnpm dev
 ```
 
-If you prefer the short `pnpm` command for the current PowerShell session, define a temporary function:
+Optional temporary shorthand for the current PowerShell session:
 
 ```powershell
 function pnpm { corepack pnpm @args }
 pnpm --version
 ```
 
+## Local Firebase emulators
+
+Install a Java 21+ JDK for the current Firebase Emulator Suite baseline. No Docker or local PostgreSQL service is required.
+
+Start local Auth + Firestore emulators:
+
+```powershell
+corepack pnpm firebase:emulators
+```
+
+The default `.env.example` and `.firebaserc` use the isolated project ID `demo-nocscheduler`. The seed script refuses to run unless it is connected to the Firestore emulator and the project ID starts with `demo-`.
+
+Run the deterministic Firebase foundation test suite:
+
+```powershell
+corepack pnpm firebase:test
+```
+
+This runs the Firestore emulator, deterministic seed, Admin SDK contract checks, and Firestore Security Rules tests.
+
+## Firebase production project
+
+A real Firebase project is intentionally **not** encoded in the repository. Production onboarding will connect this repository to the owner's Firebase project and App Hosting backend without committing service-account keys.
+
+Useful authenticated CLI helpers after a Firebase project exists:
+
+```powershell
+corepack pnpm firebase:login
+corepack pnpm firebase:projects
+```
+
+Production web configuration belongs in the Firebase/App Hosting environment rather than hard-coded source files.
+
 ## Isolated Next.js local outputs
 
-Development, production build, and Playwright outputs are separated so normal development does not fight with build/E2E manifests or port locks:
+Development, production build, and Playwright outputs remain separated:
 
 ```text
 pnpm dev     → .next-dev      → port 3000
@@ -158,22 +136,42 @@ Because Playwright does not reuse the normal development server, `pnpm dev` can 
 
 ## Quality
 
-Application quality:
+With a normal pnpm shim:
 
 ```bash
 pnpm quality
+pnpm firebase:test
+pnpm exec playwright install chromium
 pnpm e2e
 ```
 
-F04 database contract verification against a disposable database:
+Without a pnpm shim on Windows:
 
-```bash
-pnpm db:reset:test
-pnpm db:migrate
-pnpm db:seed
-pnpm test:db
+```powershell
+corepack pnpm quality
+corepack pnpm firebase:test
+corepack pnpm exec playwright install chromium
+corepack pnpm e2e
 ```
 
-The F04 CI gate is read-only, uses a frozen lockfile and PostgreSQL service, validates the migration journal, proves a clean zero-database migration/seed/contract cycle, runs Prettier/ESLint/Next route type generation/TypeScript/Vitest/production build, and retains the full Playwright regression suite.
+The final F04R CI gate is read-only and verifies frozen dependency installation, static/application quality, Firebase Emulator Suite contracts/security rules, and the full Playwright regression suite.
 
-See `CONTRIBUTING.md`, `src/components/ui/README.md`, `docs/engineering/WP-F03_IMPLEMENTATION_NOTES.md`, and `docs/engineering/WP-F04_IMPLEMENTATION_NOTES.md` for engineering conventions and phase verification records.
+## Accepted F03 review routes
+
+The accepted high-fidelity product surfaces remain available while backend integration progresses:
+
+- Dashboard: `http://localhost:3000/dashboard`
+- My Schedule: `http://localhost:3000/schedule/me`
+- Team Schedule: `http://localhost:3000/schedule/team`
+- Manage Schedule: `http://localhost:3000/schedule/manage`
+- Requests: `http://localhost:3000/schedule/requests`
+- Employees: `http://localhost:3000/employees`
+- Payroll: `http://localhost:3000/payroll`
+- Reports: `http://localhost:3000/reports`
+- Activity History: `http://localhost:3000/activity`
+- Settings: `http://localhost:3000/settings/shifts`
+- Notifications: `http://localhost:3000/notifications`
+- Login boundary: `http://localhost:3000/login`
+- F01 design system: `http://localhost:3000/design-system`
+
+See `CONTRIBUTING.md`, `src/components/ui/README.md`, `docs/prd/PRD-21_Firebase_Platform_Architecture_Amendment.md`, and `docs/engineering/` for engineering conventions and phase verification records.
