@@ -17,8 +17,8 @@ export default function Home() {
           </p>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">NOCScheduler</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-secondary)] sm:text-base">
-            Project foundation is active. Product UI and the full design system intentionally begin in
-            WP-F01.
+            Project foundation is active. Product UI and the full design system intentionally begin
+            in WP-F01.
           </p>
         </header>
 
