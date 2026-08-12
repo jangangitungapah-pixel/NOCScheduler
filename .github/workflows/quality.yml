@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F03 interaction repair
+    name: F03 lint repair
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,31 +33,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Repair F03 interaction source
-        run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const path = 'src/modules/product-surfaces/schedule-experiences.tsx';
-          let source = fs.readFileSync(path, 'utf8');
-          source = source.replace('import { useMemo, useState } from "react";', 'import { useState } from "react";');
-          source = source.replace(
-            /function TeamByEmployee\(\{ employeeId \}: \{ employeeId: string \}\) \{[\s\S]*?\n\}\n\nexport function TeamScheduleExperience/,
-            `function TeamByEmployee({ employeeId }: { employeeId: string }) {
-  const row = teamSchedule.find((item) => item.employeeId === employeeId) ?? teamSchedule[0]!;
-  return (
-    <div className="product-team-mobile-list">
-      <ScheduleAgenda items={row.cells} />
-    </div>
-  );
-}
-
-export function TeamScheduleExperience`,
-          );
-          fs.writeFileSync(path, source);
-          NODE
+      - name: Remove unused import and format
+        run: >-
+          node -e "const fs=require('node:fs');const p='src/modules/product-surfaces/schedule-experiences.tsx';let s=fs.readFileSync(p,'utf8');s=s.replace('import { useMemo, useState } from \\"react\\";','import { useState } from \\"react\\";');fs.writeFileSync(p,s);" &&
           pnpm exec prettier --write src/modules/product-surfaces/schedule-experiences.tsx
 
-      - name: Commit interaction repair
+      - name: Commit repair
         run: |
           if git diff --quiet; then
             echo "No repair changes needed."
@@ -66,5 +47,5 @@ export function TeamScheduleExperience`,
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/modules/product-surfaces/schedule-experiences.tsx
-          git commit -m "fix: clean F03 schedule interactions"
+          git commit -m "fix: remove unused F03 interaction import"
           git push
