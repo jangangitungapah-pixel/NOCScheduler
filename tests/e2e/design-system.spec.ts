@@ -25,11 +25,36 @@ test("design-system reference contains page overflow on compact mobile", async (
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/design-system");
 
-  const hasPageOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
-  );
+  const overflowReport = await page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth;
+    const offenders = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          tag: element.tagName.toLowerCase(),
+          className: element.className,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          overflowX: getComputedStyle(element).overflowX,
+        };
+      })
+      .filter((element) => element.left < -1 || element.right > viewportWidth + 1)
+      .slice(0, 30);
 
-  expect(hasPageOverflow).toBe(false);
+    return {
+      viewportWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      offenders,
+    };
+  });
+
+  expect(
+    overflowReport.documentScrollWidth,
+    JSON.stringify(overflowReport, null, 2),
+  ).toBeLessThanOrEqual(overflowReport.viewportWidth);
   await expect(page.getByText("Schedule cell anatomy")).toBeVisible();
 });
 
