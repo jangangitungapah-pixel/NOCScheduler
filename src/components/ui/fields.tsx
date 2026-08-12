@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useEffect,
   useId,
   useMemo,
   useState,
@@ -194,34 +193,31 @@ export function Combobox({
   const id = idProp ?? generatedId;
   const listboxId = `${id}-listbox`;
   const selectedOption = options.find((option) => option.value === value);
-  const [query, setQuery] = useState(selectedOption?.label ?? "");
+  const [query, setQuery] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
-
-  useEffect(() => {
-    setQuery(selectedOption?.label ?? "");
-  }, [selectedOption?.label]);
+  const displayValue = query ?? selectedOption?.label ?? "";
 
   const filteredOptions = useMemo(() => {
+    if (query === null) return options;
     const normalized = query.trim().toLocaleLowerCase("id-ID");
-    if (!normalized || selectedOption?.label === query) return options;
+    if (!normalized) return options;
 
     return options.filter((option) =>
       `${option.label} ${option.description ?? ""}`.toLocaleLowerCase("id-ID").includes(normalized),
     );
-  }, [options, query, selectedOption?.label]);
+  }, [options, query]);
 
-  useEffect(() => {
-    if (highlightedIndex >= filteredOptions.length) setHighlightedIndex(0);
-  }, [filteredOptions.length, highlightedIndex]);
+  const maxIndex = Math.max(filteredOptions.length - 1, 0);
+  const safeHighlightedIndex = Math.min(highlightedIndex, maxIndex);
+  const activeOption = filteredOptions[safeHighlightedIndex];
 
   const choose = (option: ComboboxOption) => {
-    setQuery(option.label);
+    setQuery(null);
     setOpen(false);
+    setHighlightedIndex(0);
     onValueChange?.(option.value);
   };
-
-  const activeOption = filteredOptions[highlightedIndex];
 
   return (
     <FieldShell error={error} helperText={helperText} id={id} label={label} required={required}>
@@ -250,31 +246,30 @@ export function Combobox({
             if (event.key === "ArrowDown") {
               event.preventDefault();
               setOpen(true);
-              setHighlightedIndex((index) =>
-                Math.min(index + 1, Math.max(filteredOptions.length - 1, 0)),
-              );
+              setHighlightedIndex(Math.min(safeHighlightedIndex + 1, maxIndex));
             } else if (event.key === "ArrowUp") {
               event.preventDefault();
               setOpen(true);
-              setHighlightedIndex((index) => Math.max(index - 1, 0));
+              setHighlightedIndex(Math.max(safeHighlightedIndex - 1, 0));
             } else if (event.key === "Enter" && open && activeOption) {
               event.preventDefault();
               choose(activeOption);
             } else if (event.key === "Escape") {
               setOpen(false);
-              setQuery(selectedOption?.label ?? "");
+              setQuery(null);
+              setHighlightedIndex(0);
             }
           }}
           placeholder={placeholder}
           role="combobox"
-          value={query}
+          value={displayValue}
         />
         {open && !disabled ? (
           <div className="ui-combobox__panel" id={listboxId} role="listbox">
             {filteredOptions.length ? (
               filteredOptions.map((option, index) => (
                 <div
-                  aria-selected={option.value === value || index === highlightedIndex}
+                  aria-selected={option.value === value || index === safeHighlightedIndex}
                   className="ui-combobox__option"
                   id={`${id}-option-${option.value}`}
                   key={option.value}
