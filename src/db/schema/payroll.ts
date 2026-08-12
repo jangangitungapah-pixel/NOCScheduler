@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   check,
   date,
   index,
@@ -28,7 +29,7 @@ export const payrollPeriods = pgTable(
     timezone: text("timezone").notNull().default("Asia/Jakarta"),
     status: payrollStatusEnum("status").notNull().default("OPEN"),
     calculationRevision: integer("calculation_revision").notNull().default(0),
-    isDirty: integer("is_dirty").notNull().default(0),
+    isDirty: boolean("is_dirty").notNull().default(false),
     calculatedBy: uuid("calculated_by").references(() => users.id, { onDelete: "set null" }),
     calculatedAt: timestamp("calculated_at", { withTimezone: true }),
     finalizedBy: uuid("finalized_by").references(() => users.id, { onDelete: "set null" }),
@@ -46,7 +47,6 @@ export const payrollPeriods = pgTable(
       "payroll_periods_calculation_revision_nonnegative",
       sql`${table.calculationRevision} >= 0`,
     ),
-    check("payroll_periods_is_dirty_boolean", sql`${table.isDirty} in (0, 1)`),
     check("payroll_periods_row_version_positive", sql`${table.rowVersion} > 0`),
   ],
 );
@@ -63,7 +63,7 @@ export const payrollRecords = pgTable(
       .references(() => employees.id, { onDelete: "restrict" }),
     status: payrollStatusEnum("status").notNull().default("OPEN"),
     currentRevisionId: uuid("current_revision_id"),
-    isDirty: integer("is_dirty").notNull().default(0),
+    isDirty: boolean("is_dirty").notNull().default(false),
     calculatedTakeHomePay: bigint("calculated_take_home_pay", { mode: "number" })
       .notNull()
       .default(0),
@@ -74,7 +74,6 @@ export const payrollRecords = pgTable(
   (table) => [
     uniqueIndex("payroll_records_period_employee_uq").on(table.payrollPeriodId, table.employeeId),
     index("payroll_records_employee_idx").on(table.employeeId),
-    check("payroll_records_is_dirty_boolean", sql`${table.isDirty} in (0, 1)`),
     check("payroll_records_thp_nonnegative", sql`${table.calculatedTakeHomePay} >= 0`),
     check("payroll_records_row_version_positive", sql`${table.rowVersion} > 0`),
   ],

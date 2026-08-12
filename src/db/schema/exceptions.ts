@@ -14,12 +14,14 @@ import {
 
 import { exceptionEffectEnum, exceptionTypeEnum, requestStatusEnum } from "./enums";
 import { employees, users } from "./identity";
+import { scheduleRequests } from "./requests";
 import { shiftAssignments } from "./scheduling";
 
 export const workforceExceptions = pgTable(
   "workforce_exceptions",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    requestId: uuid("request_id").references(() => scheduleRequests.id, { onDelete: "restrict" }),
     employeeId: uuid("employee_id")
       .notNull()
       .references(() => employees.id, { onDelete: "restrict" }),
@@ -37,6 +39,7 @@ export const workforceExceptions = pgTable(
     rowVersion: integer("row_version").notNull().default(1),
   },
   (table) => [
+    uniqueIndex("workforce_exceptions_request_uq").on(table.requestId),
     index("workforce_exceptions_employee_dates_idx").on(
       table.employeeId,
       table.startDate,
@@ -72,6 +75,7 @@ export const replacementAssignments = pgTable(
   "replacement_assignments",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    requestId: uuid("request_id").references(() => scheduleRequests.id, { onDelete: "restrict" }),
     originalAssignmentId: uuid("original_assignment_id")
       .notNull()
       .references(() => shiftAssignments.id, { onDelete: "restrict" }),
@@ -92,10 +96,7 @@ export const replacementAssignments = pgTable(
     rowVersion: integer("row_version").notNull().default(1),
   },
   (table) => [
-    uniqueIndex("replacement_assignments_original_active_uq").on(
-      table.originalAssignmentId,
-      table.id,
-    ),
+    uniqueIndex("replacement_assignments_request_uq").on(table.requestId),
     index("replacement_assignments_replacement_employee_idx").on(table.replacementEmployeeId),
     check(
       "replacement_assignments_interval_valid",
@@ -113,6 +114,7 @@ export const shiftSwapRequests = pgTable(
   "shift_swap_requests",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    requestId: uuid("request_id").references(() => scheduleRequests.id, { onDelete: "restrict" }),
     requesterEmployeeId: uuid("requester_employee_id")
       .notNull()
       .references(() => employees.id, { onDelete: "restrict" }),
@@ -135,6 +137,7 @@ export const shiftSwapRequests = pgTable(
     rowVersion: integer("row_version").notNull().default(1),
   },
   (table) => [
+    uniqueIndex("shift_swap_requests_request_uq").on(table.requestId),
     index("shift_swap_requests_requester_status_idx").on(table.requesterEmployeeId, table.status),
     check(
       "shift_swap_requests_distinct_employee",
@@ -152,6 +155,7 @@ export const overtimeRecords = pgTable(
   "overtime_records",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    requestId: uuid("request_id").references(() => scheduleRequests.id, { onDelete: "restrict" }),
     employeeId: uuid("employee_id")
       .notNull()
       .references(() => employees.id, { onDelete: "restrict" }),
@@ -172,6 +176,7 @@ export const overtimeRecords = pgTable(
     rowVersion: integer("row_version").notNull().default(1),
   },
   (table) => [
+    uniqueIndex("overtime_records_request_uq").on(table.requestId),
     index("overtime_records_employee_work_date_idx").on(table.employeeId, table.workDate),
     check("overtime_records_interval_valid", sql`${table.endAt} > ${table.startAt}`),
     check("overtime_records_duration_positive", sql`${table.durationMinutes} > 0`),

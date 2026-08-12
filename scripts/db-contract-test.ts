@@ -27,8 +27,8 @@ try {
   assert.equal(seedCounts.rows[0]?.employees, "3");
   assert.equal(seedCounts.rows[0]?.shifts, "3");
 
-  const member = await client.query<{ id: string }>(
-    "select id from employees where employee_code = 'NOC-003'",
+  const member = await client.query<{ id: string; user_id: string }>(
+    "select id, user_id from employees where employee_code = 'NOC-003'",
   );
   const scheduler = await client.query<{ id: string }>(
     "select id from employees where employee_code = 'NOC-002'",
@@ -42,9 +42,23 @@ try {
   `);
 
   assert.ok(member.rows[0]?.id);
+  assert.ok(member.rows[0]?.user_id);
   assert.ok(scheduler.rows[0]?.id);
   assert.ok(s2.rows[0]?.id);
   assert.ok(s3Version.rows[0]?.id);
+
+  const dirtyColumnTypes = await client.query<{ table_name: string; data_type: string }>(`
+    select table_name, data_type
+    from information_schema.columns
+    where table_schema = 'public'
+      and column_name = 'is_dirty'
+      and table_name in ('payroll_periods', 'payroll_records')
+    order by table_name
+  `);
+  assert.deepEqual(dirtyColumnTypes.rows, [
+    { table_name: "payroll_periods", data_type: "boolean" },
+    { table_name: "payroll_records", data_type: "boolean" },
+  ]);
 
   await expectPgError(
     () =>
@@ -68,6 +82,31 @@ try {
       ),
     "23P01",
     "overlapping shift version",
+  );
+
+  const requestId = "09000000-0000-4000-8000-000000000001";
+  await client.query(
+    `insert into schedule_requests
+      (id, type, status, employee_id, requester_user_id, start_date, end_date, reason, needs_replacement)
+     values ($1, 'LEAVE', 'PENDING', $2, $3, '2026-08-20', '2026-08-20', 'Contract leave request', true)`,
+    [requestId, member.rows[0]!.id, member.rows[0]!.user_id],
+  );
+  await client.query(
+    `insert into workforce_exceptions
+      (request_id, employee_id, exception_type, start_date, end_date, status, reason)
+     values ($1, $2, 'LEAVE', '2026-08-20', '2026-08-20', 'PENDING', 'Contract leave request')`,
+    [requestId, member.rows[0]!.id],
+  );
+  await expectPgError(
+    () =>
+      client.query(
+        `insert into workforce_exceptions
+          (request_id, employee_id, exception_type, start_date, end_date, status, reason)
+         values ($1, $2, 'LEAVE', '2026-08-20', '2026-08-20', 'PENDING', 'Duplicate request link')`,
+        [requestId, member.rows[0]!.id],
+      ),
+    "23505",
+    "duplicate request-to-exception link",
   );
 
   const periodId = "10000000-0000-4000-8000-000000000001";

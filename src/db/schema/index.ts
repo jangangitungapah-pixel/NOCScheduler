@@ -6,6 +6,7 @@ export * from "./exceptions";
 export * from "./identity";
 export * from "./notifications";
 export * from "./payroll";
+export * from "./requests";
 export * from "./scheduling";
 export * from "./settings";
 export * from "./shifts";

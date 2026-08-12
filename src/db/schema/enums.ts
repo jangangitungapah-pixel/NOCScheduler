@@ -31,6 +31,17 @@ export const exceptionTypeEnum = pgEnum("exception_type", [
   "UNAVAILABLE",
   "EMERGENCY",
 ]);
+export const requestTypeEnum = pgEnum("request_type", [
+  "LEAVE",
+  "SICK",
+  "PERMISSION",
+  "TRAINING",
+  "BUSINESS_DUTY",
+  "SCHEDULE_CHANGE",
+  "SHIFT_SWAP",
+  "REPLACEMENT",
+  "OVERTIME",
+]);
 export const requestStatusEnum = pgEnum("request_status", [
   "DRAFT",
   "PENDING",
