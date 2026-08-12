@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 export type Theme = "light" | "dark";
 
@@ -11,9 +18,10 @@ type ThemeContextValue = {
 };
 
 const STORAGE_KEY = "nocscheduler.theme";
+const THEME_EVENT = "nocscheduler:theme-change";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function readStoredTheme(): Theme {
+function getThemeSnapshot(): Theme {
   if (typeof window === "undefined") return "light";
 
   try {
@@ -23,30 +31,45 @@ function readStoredTheme(): Theme {
   }
 }
 
-export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [theme, setTheme] = useState<Theme>("light");
+function subscribeToTheme(listener: () => void) {
+  const notify = () => listener();
+  window.addEventListener("storage", notify);
+  window.addEventListener(THEME_EVENT, notify);
 
-  useEffect(() => {
-    setTheme(readStoredTheme());
-  }, []);
+  return () => {
+    window.removeEventListener("storage", notify);
+    window.removeEventListener(THEME_EVENT, notify);
+  };
+}
+
+function persistTheme(theme: Theme) {
+  const root = document.documentElement;
+  root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, theme);
+  } catch {
+    // Storage may be unavailable in hardened/private browsing contexts.
+  }
+
+  window.dispatchEvent(new Event(THEME_EVENT));
+}
+
+export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
+  const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "light");
 
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = theme;
     root.style.colorScheme = theme;
-
-    try {
-      window.localStorage.setItem(STORAGE_KEY, theme);
-    } catch {
-      // Storage may be unavailable in hardened/private browsing contexts.
-    }
   }, [theme]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
-      setTheme,
-      toggleTheme: () => setTheme((current) => (current === "light" ? "dark" : "light")),
+      setTheme: persistTheme,
+      toggleTheme: () => persistTheme(theme === "light" ? "dark" : "light"),
     }),
     [theme],
   );
