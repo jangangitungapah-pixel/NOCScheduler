@@ -67,7 +67,7 @@ jobs:
         run: |
           node scripts/firebase-rebaseline-docs.mjs --finalize
           pnpm format
-          git rm scripts/firebase-rebaseline-docs.mjs
+          git rm -f scripts/firebase-rebaseline-docs.mjs
 
       - name: Commit canonical Firebase rebaseline
         run: |
