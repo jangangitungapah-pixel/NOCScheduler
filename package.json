@@ -48,5 +48,11 @@
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp@0.34.5",
+      "unrs-resolver@1.12.2"
+    ]
   }
 }
