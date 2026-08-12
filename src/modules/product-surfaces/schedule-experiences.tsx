@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { PageHeader } from "@/components/layout/shell-content";
 import type { RouteMeta } from "@/components/layout/navigation";
