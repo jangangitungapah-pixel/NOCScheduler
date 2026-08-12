@@ -58,7 +58,8 @@ test("team schedule mobile recomposes between day and employee modes", async ({ 
     "aria-pressed",
     "true",
   );
-  await expect(mobile.getByRole("combobox").first()).toBeVisible();
+  await expect(mobile.getByRole("combobox")).toHaveCount(1);
+  await expect(mobile.getByRole("combobox")).toBeVisible();
 
   const overflow = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
