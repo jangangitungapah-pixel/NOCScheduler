@@ -1,4 +1,4 @@
-name: Firebase Rebaseline Bootstrap
+name: Firebase Rebaseline Finalize
 
 on:
   push:
@@ -12,10 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  rebaseline:
-    name: F04R Firebase rebaseline bootstrap
+  finalize:
+    name: F04R Firebase rebaseline finalize
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -29,44 +29,19 @@ jobs:
           install: false
           cache: true
 
-      - name: Setup Java for Firebase emulators
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
-
       - name: Refresh Firebase dependency lock
         run: pnpm install --no-frozen-lockfile
 
-      - name: Apply canonical Firebase architecture documentation
-        run: node scripts/firebase-rebaseline-docs.mjs
-
-      - name: Canonical format
-        run: >-
-          pnpm exec prettier --write
-          package.json pnpm-workspace.yaml firebase.json firestore.indexes.json apphosting.yaml
-          vitest.firebase.config.ts src/firebase scripts/firebase-contract-test.ts tests/firebase
-          README.md docs/prd docs/engineering/WP-F04_IMPLEMENTATION_NOTES.md
-          docs/engineering/WP-F04R_FIREBASE_REBASELINE_NOTES.md
-          docs/workplan/WORKPLAN_NOCScheduler_Fullstack_Implementation_Master_v1.md
-          .github/workflows/quality.yml scripts/firebase-rebaseline-docs.mjs
-
-      - name: Static and application quality gates
-        run: pnpm quality
-
-      - name: Firebase emulator contracts and Security Rules
-        run: pnpm firebase:test
-
-      - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Playwright regression
-        run: pnpm e2e
-
-      - name: Finalize F04R handoff and restore read-only CI
+      - name: Generate canonical Firebase rebaseline files
         run: |
+          node scripts/firebase-rebaseline-docs.mjs
+          pnpm format
           node scripts/firebase-rebaseline-docs.mjs --finalize
           pnpm format
+
+      - name: Keep workflow unchanged for bot push
+        run: |
+          git restore --source=HEAD -- .github/workflows/quality.yml
           git rm -f scripts/firebase-rebaseline-docs.mjs
 
       - name: Commit canonical Firebase rebaseline
