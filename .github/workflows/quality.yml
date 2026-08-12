@@ -3,9 +3,10 @@ name: Quality
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -13,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F04 database bootstrap
+    name: F04 quality gate
     runs-on: ubuntu-latest
     timeout-minutes: 25
     services:
@@ -45,23 +46,14 @@ jobs:
           install: false
           cache: true
 
-      - name: Install and lock F04 dependencies
-        run: pnpm install --no-frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Canonical format
-        run: pnpm format
+      - name: Static and application quality gates
+        run: pnpm quality
 
-      - name: Generate reviewed F04 migrations
-        run: |
-          rm -rf drizzle
-          pnpm exec drizzle-kit generate --name=f04_domain_foundation
-          sleep 1
-          pnpm exec drizzle-kit generate --custom --name=f04_historical_guards
-          CUSTOM_MIGRATION="$(find drizzle -type f -name '*.sql' | sort | tail -n 1)"
-          test -n "$CUSTOM_MIGRATION"
-          cp scripts/f04-historical-guards.sql "$CUSTOM_MIGRATION"
-          pnpm exec prettier --write drizzle/meta/*.json
-          pnpm db:check
+      - name: Validate migration journal
+        run: pnpm db:check
 
       - name: Verify clean database install and contracts
         run: |
@@ -70,17 +62,8 @@ jobs:
           pnpm db:seed
           pnpm test:db
 
-      - name: Static and application quality gates
-        run: pnpm quality
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
 
-      - name: Commit canonical F04 foundation
-        run: |
-          if git diff --quiet && git status --porcelain --untracked-files=all | grep -q '^$'; then
-            echo "No generated changes found."
-            exit 1
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json pnpm-lock.yaml compose.yaml drizzle.config.ts drizzle scripts src/db src/domain/core .env.example
-          git commit -m "feat: establish WP-F04 database domain foundation"
-          git push
+      - name: Playwright regression
+        run: pnpm e2e
