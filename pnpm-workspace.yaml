@@ -3,6 +3,6 @@ packages:
 
 # pnpm 11 blocks dependency lifecycle scripts unless explicitly reviewed.
 # Keep approvals version-scoped so dependency upgrades require a new review.
-onlyBuiltDependencies:
-  - sharp@0.34.5
-  - unrs-resolver@1.12.2
+allowBuilds:
+  sharp@0.34.5: true
+  unrs-resolver@1.12.2: true

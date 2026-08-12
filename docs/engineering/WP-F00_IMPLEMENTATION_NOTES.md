@@ -18,16 +18,18 @@
 - Liveness route at `/api/health/live`; DB-aware readiness remains a later production/data phase.
 - GitHub Actions quality workflow.
 - Repository contribution conventions.
-- pnpm dependency-build security policy with version-scoped approvals in `pnpm-workspace.yaml`.
+- pnpm 11 dependency-build security policy with version-scoped `allowBuilds` approvals in `pnpm-workspace.yaml`.
 
 ## Dependency build policy
 
-pnpm 11 rejects unreviewed dependency lifecycle scripts. WP-F00 explicitly permits only the currently resolved versions needed by the baseline:
+pnpm 11 uses `allowBuilds` as the canonical dependency lifecycle-script policy and fails installation when an unreviewed dependency requires a build script.
+
+WP-F00 explicitly permits only the currently reviewed baseline versions:
 
 - `sharp@0.34.5`
 - `unrs-resolver@1.12.2`
 
-The allow-list is intentionally version-scoped. A future dependency version change must be reviewed rather than inheriting script execution permission silently.
+The allow-list is intentionally version-scoped. A future dependency version change must be reviewed rather than inheriting script execution permission silently. `dangerouslyAllowAllBuilds` is not enabled.
 
 ## Intentional boundaries
 
