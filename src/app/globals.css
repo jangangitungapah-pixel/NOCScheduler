@@ -2,7 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/components.css";
 @import "../styles/shell.css";
-@import "../styles/reference.css";
+@import "../styles/responsive.css";
 
 * {
   box-sizing: border-box;
