@@ -7,10 +7,25 @@ The repository is implemented from the canonical product specifications in `docs
 ## Current implementation phase
 
 - **WP-F00 — Project Setup & Engineering Baseline: ACCEPTED**
-- **WP-F01 — Frontend Foundation & Design System: COMPLETE — awaiting user acceptance**
-- WP-F02 has not started.
+- **WP-F01 — Frontend Foundation & Design System: ACCEPTED**
+- **WP-F02 — Application Shell, Navigation & Responsive Frame: COMPLETE — awaiting user acceptance**
+- WP-F03 has not started.
 
-The F01 visual/component reference is available at `/design-system`. Application navigation shell and full feature pages begin only in later phases.
+F02 is intentionally a shell/reference phase. High-fidelity business surfaces and fixture-driven feature content begin in WP-F03.
+
+## Review routes
+
+With `pnpm dev` running on port 3000, review:
+
+- application shell: `http://localhost:3000/dashboard`
+- My Schedule shell: `http://localhost:3000/schedule/me`
+- Team Schedule shell: `http://localhost:3000/schedule/team`
+- Payroll shell: `http://localhost:3000/payroll`
+- Settings shell: `http://localhost:3000/settings`
+- login boundary outside the shell: `http://localhost:3000/login`
+- F01 design-system reference: `http://localhost:3000/design-system`
+
+The root route `/` currently redirects the temporary authenticated fixture to `/dashboard`. Real authentication/session routing is intentionally deferred to WP-F05.
 
 ## Stack baseline
 
@@ -58,10 +73,17 @@ function pnpm { corepack pnpm @args }
 pnpm --version
 ```
 
-Then open:
+## Isolated Next.js local outputs
 
-- application baseline: `http://localhost:3000`
-- F01 design-system reference: `http://localhost:3000/design-system`
+F02 separates development, production build, and Playwright outputs so normal development does not fight with build/E2E manifests or port locks:
+
+```text
+pnpm dev     → .next-dev      → port 3000
+pnpm build   → .next-build
+pnpm e2e     → .next-e2e      → isolated production server on port 3100
+```
+
+Because Playwright no longer reuses the normal development server, `pnpm dev` can remain running while `pnpm e2e` executes.
 
 ## Quality
 
@@ -82,5 +104,7 @@ corepack pnpm e2e
 ```
 
 `quality` intentionally does not shell out to nested `pnpm` commands, so it works through both direct pnpm and `corepack pnpm` invocation.
+
+The F02 CI gate is read-only, uses a frozen lockfile, runs the full static/application quality suite, and executes the full Playwright acceptance suite.
 
 See `CONTRIBUTING.md`, `src/components/ui/README.md`, and `docs/engineering/` for engineering conventions and phase verification records.
