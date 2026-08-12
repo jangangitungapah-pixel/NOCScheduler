@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F03 lint repair
+    name: F03 quality gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,19 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Repair unused import
-        run: |
-          sed -i 's/{ useMemo, useState }/{ useState }/' src/modules/product-surfaces/schedule-experiences.tsx
-          pnpm exec prettier --write src/modules/product-surfaces/schedule-experiences.tsx
+      - name: Static and application quality gates
+        run: pnpm quality
 
-      - name: Commit repair
-        run: |
-          if git diff --quiet; then
-            echo "No repair changes needed."
-            exit 1
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/modules/product-surfaces/schedule-experiences.tsx
-          git commit -m "fix: remove unused F03 interaction import"
-          git push
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright F03 acceptance
+        run: pnpm e2e
