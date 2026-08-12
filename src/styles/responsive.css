@@ -1,0 +1,23 @@
+.ui-banner,
+.ui-toast,
+.ui-inline-feedback {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ui-toast {
+  width: min(24rem, 100%);
+}
+
+.ds-card,
+.ds-stack,
+.ds-form-grid {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 47.99rem) {
+  .ds-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
