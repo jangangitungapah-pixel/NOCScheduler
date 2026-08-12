@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: F03 canonical formatter
+    name: F03 quality gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,23 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format F03 product surfaces
-        run: >-
-          pnpm exec prettier --write
-          src/components/layout/shell-content.tsx
-          src/modules/product-surfaces/fixtures.ts
-          src/modules/product-surfaces/product-surface.tsx
-          src/styles/product-surfaces.css
-          tests/e2e/product-surfaces.spec.ts
+      - name: Static and application quality gates
+        run: pnpm quality
 
-      - name: Commit canonical formatting
-        run: |
-          if git diff --quiet; then
-            echo "No formatting changes needed."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/components/layout/shell-content.tsx src/modules/product-surfaces/fixtures.ts src/modules/product-surfaces/product-surface.tsx src/styles/product-surfaces.css tests/e2e/product-surfaces.spec.ts
-          git commit -m "style: format F03 product surfaces"
-          git push
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright F03 acceptance
+        run: pnpm e2e
